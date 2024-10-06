@@ -30,12 +30,15 @@ public class MediaEntity extends BaseEntity {
 
     private String mediaPath;
 
+    private String mediaHash;
+
     @Builder
-    public MediaEntity(String mediaId, String mediaName, Long mediaSize, String mediaPath) {
+    public MediaEntity(String mediaId, String mediaName, Long mediaSize, String mediaPath, String mediaHash) {
         this.mediaId = mediaId;
         this.mediaName = mediaName;
         this.mediaSize = mediaSize;
         this.mediaPath = mediaPath;
+        this.mediaHash = mediaHash;
     }
 
     /**
@@ -45,6 +48,16 @@ public class MediaEntity extends BaseEntity {
     public void setFeed(FeedEntity feed) {
         this.feed = feed;
         feed.addMedia(this);
+    }
+
+    public void deleteFeed(FeedEntity feed) {
+        this.feed = feed;
+        feed.deleteMedia(this);
+    }
+
+    public void clearMediaAndFeed(FeedEntity feed) {
+        this.feed = feed;
+        feed.clearMedia();
     }
 
 
