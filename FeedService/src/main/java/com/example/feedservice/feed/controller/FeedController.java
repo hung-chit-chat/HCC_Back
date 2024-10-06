@@ -23,7 +23,7 @@ public class FeedController {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(feedService.createFeed(requestFeedCreateDto));
         } catch(RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().status("error").build());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().result("error").build());
         }
     }
 
@@ -33,7 +33,7 @@ public class FeedController {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(feedService.updateFeed(feedId, requestFeedUpdateDto));
         } catch(RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().status("error").build());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().result("error").build());
         }
     }
 

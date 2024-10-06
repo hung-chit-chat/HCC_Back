@@ -1,5 +1,6 @@
 package com.example.feedservice.feed.dto.request;
 
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,8 @@ public class RequestFeedCreateDto {
 
     private String memberId;
     private String publicScope;
+
+    @Size(max = 3000)       // 최대 3000자
     private String contents;
     private List<MultipartFile> media;
 

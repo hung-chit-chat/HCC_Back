@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResponseSuccessDto {
 
-    private String status;
+    private String result;
 
     @Builder
-    public ResponseSuccessDto(String status) {
-        this.status = status;
+    public ResponseSuccessDto(String result) {
+        this.result = result;
     }
 }
