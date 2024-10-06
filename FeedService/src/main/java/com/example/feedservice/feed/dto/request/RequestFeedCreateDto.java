@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestFeedCreateDto {
 
-    private String postId;
     private String memberId;
     private String publicScope;
     private String contents;
@@ -22,8 +21,7 @@ public class RequestFeedCreateDto {
     }
 
     @Builder
-    public RequestFeedCreateDto(String postId, String memberId, String publicScope, String contents, List<MultipartFile> media) {
-        this.postId = postId;
+    public RequestFeedCreateDto(String memberId, String publicScope, String contents, List<MultipartFile> media) {
         this.memberId = memberId;
         this.publicScope = publicScope;
         this.contents = contents;
