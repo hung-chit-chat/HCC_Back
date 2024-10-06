@@ -51,7 +51,7 @@ public class FeedService {
         }
 
         return ResponseSuccessDto.builder()
-                .status("success")
+                .result("success")
                 .build();
 
     }
@@ -74,7 +74,7 @@ public class FeedService {
         }
 
         return ResponseSuccessDto.builder()
-                .status("success")
+                .result("success")
                 .build();
     }
 
