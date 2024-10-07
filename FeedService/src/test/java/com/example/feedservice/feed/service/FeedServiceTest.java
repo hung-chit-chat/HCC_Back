@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
@@ -39,7 +40,6 @@ class FeedServiceTest {
 
     @DisplayName("게시글 생성 테스트")
     @Test
-    @Rollback(false)
     public void PostServiceTest() throws Exception{
 
         List<MultipartFile> multipartFiles = new ArrayList<>();
@@ -71,12 +71,11 @@ class FeedServiceTest {
 
     @DisplayName("게시글 업데이트 테스트")
     @Test
-    @Rollback(false)
     public void putTest() throws Exception{
 
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
-        multipartFiles.add(new MockMultipartFile("testImage11515",   "testImage51212112.jpeg", "image/jpg", Files.readAllBytes(Paths.get(uploadPath + "/" + "test1.jpg"))));
+        //multipartFiles.add(new MockMultipartFile("testImage11515",   "testImage51212112.jpeg", "image/jpg", Files.readAllBytes(Paths.get(uploadPath + "/" + "test1.jpg"))));
 
         FeedEntity findFeed = feedRepository.findByMemberId("1234").get();
 

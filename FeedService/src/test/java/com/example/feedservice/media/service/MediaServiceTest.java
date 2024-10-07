@@ -52,7 +52,6 @@ class MediaServiceTest {
     @DisplayName("파일 업로드 테스트")
     @Test
     @Transactional
-    @Rollback(false)
     public void fileUploadTest() throws Exception{
 
         long startTime = System.currentTimeMillis();
@@ -108,7 +107,6 @@ class MediaServiceTest {
     @DisplayName("파일 업데이트 테스트")
     @Test
     @Transactional
-    @Rollback(false)
     public void MediaServiceTest() throws Exception{
 
         List<MultipartFile> multipartFiles = new ArrayList<>();

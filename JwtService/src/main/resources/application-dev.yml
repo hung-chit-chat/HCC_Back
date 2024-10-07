@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:mysql://mariaDB:3306/jwt_db  # MySQL 컨테이너와 연결
+    username: root
+    password: root
+    hikari:
+      connection-test-query: SELECT 1
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        #format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MariaDBDialect
+        #배치 인서트
+        jdbc:
+          batch_size: 10

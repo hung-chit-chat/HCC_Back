@@ -3,10 +3,7 @@ package com.example.feedservice.media.util;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -26,10 +23,8 @@ public class MediaUtil {
         // SHA-256 해시 알고리즘을 사용
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-        //
-        File convertedFile = this.multipartFileToFile(multipartFile);
-
-        FileInputStream fis = new FileInputStream(convertedFile);
+        // 파일에서 데이터를 읽을 InputStream 사용 (변환 없이)
+        InputStream inputStream = multipartFile.getInputStream();
 
         byte[] byteArray = new byte[8192];   // 8KB 크기
 
@@ -40,10 +35,10 @@ public class MediaUtil {
         int bytesRead = 0;
 
         // 정해진 크기로 파일을 읽음
-        while ((bytesRead = fis.read(byteArray)) != -1) {
+        while ((bytesRead = inputStream.read(byteArray)) != -1) {
             digest.update(byteArray, 0, bytesRead);
         }
-        fis.close();
+        inputStream.close();
 
         // 해시값 추출
         byte[] hashBytes = digest.digest();
@@ -55,23 +50,6 @@ public class MediaUtil {
         }
 
         return sb.toString();
-    }
-
-    /**
-     * Convert MultipartFile -> File
-     * @param multipartFile - 멀티파트 파일
-     * @return file
-     * */
-    public File multipartFileToFile(MultipartFile multipartFile) throws IOException {
-
-        File convFile = new File(multipartFile.getOriginalFilename());
-        convFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(multipartFile.getBytes());
-        fos.close();
-
-        return convFile;
-
     }
 
     /**

@@ -53,3 +53,15 @@ logging:
     org.springframework.security: OFF
     #org.springframework.cloud.gateway: DEBUG
     org.springframework.web: OFF
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # 활성화할 엔드포인트
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
