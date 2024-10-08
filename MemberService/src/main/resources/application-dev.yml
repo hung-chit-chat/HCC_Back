@@ -3,6 +3,7 @@ spring:
     url: jdbc:mysql://mariaDB:3306/member_db  # MySQL 컨테이너와 연결
     username: root
     password: root
+    driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       connection-test-query: SELECT 1
 
