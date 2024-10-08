@@ -30,15 +30,13 @@ public class MediaEntity extends BaseEntity {
 
     private String mediaPath;
 
-    private String mediaHash;
 
     @Builder
-    public MediaEntity(String mediaId, String mediaName, Long mediaSize, String mediaPath, String mediaHash) {
+    public MediaEntity(String mediaId, String mediaName, Long mediaSize, String mediaPath) {
         this.mediaId = mediaId;
         this.mediaName = mediaName;
         this.mediaSize = mediaSize;
         this.mediaPath = mediaPath;
-        this.mediaHash = mediaHash;
     }
 
     /**
