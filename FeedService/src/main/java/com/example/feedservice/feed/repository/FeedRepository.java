@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface FeedRepository extends JpaRepository<FeedEntity, String>{
 
+    Optional<FeedEntity> findByMemberId(String memberId);
 }

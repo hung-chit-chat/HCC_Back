@@ -1,6 +1,7 @@
 package com.example.feedservice.media.repository.impl;
 
 
+import com.example.feedservice.feed.entity.QFeedEntity;
 import com.example.feedservice.media.entity.MediaEntity;
 import com.example.feedservice.media.entity.QMediaEntity;
 import com.example.feedservice.media.repository.MediaRepositoryCustom;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.feedservice.feed.entity.QFeedEntity.feedEntity;
 import static com.example.feedservice.media.entity.QMediaEntity.*;
 
 @RequiredArgsConstructor
@@ -26,5 +28,15 @@ public class MediaRepositoryImpl implements MediaRepositoryCustom {
                 .where(mediaEntity.feed.feedId.eq(feedId))
                 .fetch();
 
+    }
+
+    @Override
+    public List<MediaEntity> findWithFeedByFeedId(String feedId) {
+
+        return queryFactory.select(mediaEntity)
+                .from(mediaEntity)
+                .join(mediaEntity.feed, feedEntity).fetchJoin()
+                .where(mediaEntity.feed.feedId.eq(feedId))
+                .fetch();
     }
 }

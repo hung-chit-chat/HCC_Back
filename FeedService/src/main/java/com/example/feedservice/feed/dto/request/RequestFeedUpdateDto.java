@@ -9,8 +9,6 @@ import java.util.List;
 @Getter
 public class RequestFeedUpdateDto {
 
-    private String feedId;
-
     private String publicScope;
 
     private String contents;
@@ -18,8 +16,7 @@ public class RequestFeedUpdateDto {
     private List<MultipartFile> media;
 
     @Builder
-    public RequestFeedUpdateDto(String feedId, String publicScope, String contents, List<MultipartFile> media) {
-        this.feedId = feedId;
+    public RequestFeedUpdateDto(String publicScope, String contents, List<MultipartFile> media) {
         this.publicScope = publicScope;
         this.contents = contents;
         this.media = media;
