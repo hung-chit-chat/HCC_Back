@@ -25,23 +25,22 @@ spring:
     gateway:
       routes:
         - id: member-service            # 로그인 이후의 멤버 API
-          uri: http://localhost:8081
+          uri: http://member_service:8081
           # 추후에 로드밸런서 적용시 lb://MEMBER-SERVICE 이용
           predicates:
             - Path=/members/test
           filters:
             - JwtVerificationFilter
         - id: member-auth-service       # 회원가입, 로그인
-          uri: http://localhost:8081
+          uri: http://member_service:8081
           predicates:
             - Path=/members/auth/**
-          filters:
         - id: jwt-service
-          uri: http://localhost:8089
+          uri: http://jwt_service:8089
           predicates:
             -  Path=/jwt/**
         - id: feed-service
-          uri: http://localhost:9005
+          uri: http://feed_service:9005
           predicates:
             - Path=/feed/**
           filters:

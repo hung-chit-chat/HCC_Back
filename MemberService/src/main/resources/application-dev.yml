@@ -18,3 +18,14 @@ spring:
         #배치 인서트
         jdbc:
           batch_size: 10
+
+management:
+    endpoints:
+      web:
+        exposure:
+          include: "*"  # 활성화할 엔드포인트
+    health:
+      livenessstate:
+        enabled: true
+      readinessstate:
+        enabled: true

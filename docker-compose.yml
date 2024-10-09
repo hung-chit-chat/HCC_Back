@@ -15,7 +15,9 @@ services:
     container_name: mariaDB
     image: mariadb:latest   # mysql 최신버전을 도커 허브에서 가져옴
     ports:
-      - 3306:3306
+      - 3307:3306
+    networks:
+      - my-network
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
@@ -29,13 +31,15 @@ services:
       retries: 5
 
   feed_service:
-    container_name: feed_service
+    container_name: feed_service        # 서비스 이름
     #restart: on-failure
     build:
       context: ./FeedService
       dockerfile: Dockerfile_FeedService
     ports:
       - "9005:9005"
+    networks:
+      - my-network
     environment:
       SPRING_PROFILES_ACTIVE: dev  # application-dev.yml 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mariadb://mariaDB:3306/feed_db
@@ -53,9 +57,11 @@ services:
       dockerfile: Dockerfile_MemberService
     ports:
       - "8081:8081"
+    networks:
+      - my-network
     environment:
       SPRING_PROFILES_ACTIVE: dev  # application-dev.yml 프로파일 활성화
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/member_db
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/member_db
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     depends_on:
@@ -70,9 +76,11 @@ services:
       dockerfile: Dockerfile_JwtService
     ports:
       - "8089:8089"
+    networks:
+        - my-network
     environment:
       SPRING_PROFILES_ACTIVE: dev  # application-dev.yml 프로파일 활성화
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/jwt_db
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/jwt_db
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     depends_on:
@@ -87,3 +95,10 @@ services:
       dockerfile: Dockerfile_ApiGatewayService
     ports:
       - "8000:8000"
+    networks:
+      - my-network
+
+
+networks:
+  my-network:
+    driver: bridge
