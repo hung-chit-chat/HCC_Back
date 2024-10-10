@@ -16,8 +16,8 @@ services:
     image: mariadb:latest   # mysql 최신버전을 도커 허브에서 가져옴
     ports:
       - 3307:3306
-    networks:
-      - my-network
+#    networks:
+#      - my-network
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
@@ -30,16 +30,30 @@ services:
       timeout: 10s
       retries: 5
 
+  ## 레디스 
+  redis_cli:
+    container_name: redis-cli
+    image: redis:latest
+    ports:
+      - 6380:6379
+    volumes:
+      - ./redis-data:/data                         # MariaDB 데이터 저장 경로
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ## 피드서비스
   feed_service:
-    container_name: feed_service        # 서비스 이름
-    #restart: on-failure
+    container_name: feed-service        # 서비스 이름
+    restart: on-failure
     build:
       context: ./FeedService
       dockerfile: Dockerfile_FeedService
     ports:
       - "9005:9005"
-    networks:
-      - my-network
     environment:
       SPRING_PROFILES_ACTIVE: dev  # application-dev.yml 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mariadb://mariaDB:3306/feed_db
@@ -49,35 +63,38 @@ services:
       mariaDB_database:
         condition: service_healthy
 
+  ## 멤버서비스
   member_service:
-    container_name: member_service
+    container_name: member-service
     restart: on-failure
     build:
       context: ./MemberService
       dockerfile: Dockerfile_MemberService
     ports:
       - "8081:8081"
-    networks:
-      - my-network
     environment:
       SPRING_PROFILES_ACTIVE: dev  # application-dev.yml 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/member_db
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+      REDIS_HOST: redis_cli    # Redis 호스트 설정 서비스 이름
+      REDIS_PORT: 6379         # Redis 포트 설정
     depends_on:
       mariaDB_database:
         condition: service_healthy
+      redis_cli:
+        condition: service_healthy
 
+
+  ## JWT 서비스
   jwt_service:
-    container_name: jwt_service
+    container_name: jwt-service
     restart: on-failure
     build:
       context: ./JwtService
       dockerfile: Dockerfile_JwtService
     ports:
       - "8089:8089"
-    networks:
-        - my-network
     environment:
       SPRING_PROFILES_ACTIVE: dev  # application-dev.yml 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/jwt_db
@@ -87,18 +104,13 @@ services:
       mariaDB_database:
         condition: service_healthy
 
+
+  ## 게이트웨이 서비스
   api_gateway_service:
-    container_name: api_gateway_service
+    container_name: api-gateway-service
     restart: on-failure
     build:
       context: ./api-gateway-service
       dockerfile: Dockerfile_ApiGatewayService
     ports:
       - "8000:8000"
-    networks:
-      - my-network
-
-
-networks:
-  my-network:
-    driver: bridge

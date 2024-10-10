@@ -3,6 +3,8 @@ server:
 
 domain:
   local: "http://localhost"
+  dev:
+    jwt: "http://jwt-service"
 
 spring:
   datasource:
@@ -36,14 +38,3 @@ spring:
 #logging:
 #  level:
 #    root: off
-
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: health,info  # 활성화할 엔드포인트
-#  health:
-#    livenessstate:
-#      enabled: true
-#    readinessstate:
-#      enabled: true
