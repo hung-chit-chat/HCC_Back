@@ -3,13 +3,16 @@ server:
 
 domain:
   local: "http://localhost"
+  dev:
+    jwt: "http://jwt-service"
 
 spring:
   datasource:
     hikari:
       maximum-pool-size: 50
   profiles:
-    include: local    # application-local.yml 을 포함시킴
+    active:  ${SPRING_PROFILES_ACTIVE:local} # 기본값을 application-local.yml 로 설정  -> 환경변수로 변경 가능
+  #include: local    # application-local.yml 을 포함시킴
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 

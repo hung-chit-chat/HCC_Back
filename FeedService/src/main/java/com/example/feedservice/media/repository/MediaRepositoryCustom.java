@@ -9,4 +9,6 @@ import java.util.List;
 public interface MediaRepositoryCustom {
 
     List<MediaEntity> findByFeedId(String feedId);
+
+    List<MediaEntity> findWithFeedByFeedId(String feedId);
 }

@@ -4,23 +4,23 @@ server:
 
 spring:
   profiles:
-    include: local    # application-home.yml ? ????
+    active: ${SPRING_PROFILES_ACTIVE:local} # 기본값을 application-local.yml 로 설정  -> 환경변수로 변경 가능
+  #include: local    # application-home.yml ? ????
 
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        #format_sql: true
-        show_sql: true
-        dialect: org.hibernate.dialect.MariaDBDialect
-        #배치 인서트
-        jdbc:
-          batch_size: 10
   application:
     name: feed-service
 
 upload:
-  path: "/Users/yudong-yeob/desktop/filetest"    # MAC 파일 경로
-  #path: "C:/Users/User/Desktop/filetest"          # Windows 파일 경로
+  #path: "/Users/yudong-yeob/desktop/filetest"    # MAC 파일 경로
+  path: "C:/Users/User/Desktop/filetest"          # Windows 파일 경로
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # 활성화할 엔드포인트
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true

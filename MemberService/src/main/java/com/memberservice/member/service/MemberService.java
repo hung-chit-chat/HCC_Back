@@ -40,8 +40,8 @@ public class MemberService {
     private final IdentifierFactory identifierFactory;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Value("${domain.local}")
-    private String domain;
+    @Value("${domain.dev.jwt}")
+    private String JWT_DOMAIN;
 
 
     // 회원가입
@@ -98,7 +98,7 @@ public class MemberService {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
-        String uri = domain + ":8089/jwt/login"; // jwt service
+        String uri = JWT_DOMAIN + ":8089/jwt/login"; // jwt service
 
 
         HttpClient client = HttpClient.newHttpClient();
