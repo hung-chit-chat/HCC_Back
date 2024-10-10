@@ -1,6 +1,7 @@
-package com.hcc.socket.security.jwt;
+package com.memberservice.comm.jwt;
 
-import com.hcc.socket.security.jwt.port.DecodedJWT;
+
+import com.memberservice.comm.jwt.port.DecodedJWT;
 
 public class JWTHolder {
 
@@ -9,7 +10,7 @@ public class JWTHolder {
 
     public JWTHolder(String authorizationHeader) {
         this.authorizationHeader = authorizationHeader;
-        this.decodedJWT = new MockDecodedJWT();
+        this.decodedJWT = new DecodedAuth0();
     }
 
     public JWTHolder(String authorizationHeader, DecodedJWT decodedJWT) {
