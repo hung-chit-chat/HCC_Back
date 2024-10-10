@@ -13,6 +13,10 @@ application-local.yml
 # Java class files
 *.class
 
+# data files
+/mariadb-data/
+/redis-data/
+
 # Log files
 *.log
 
