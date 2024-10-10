@@ -29,10 +29,6 @@ public class AppConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-
-
         Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder = new Jackson2ObjectMapperBuilder();
         ObjectMapper objectMapper = jackson2ObjectMapperBuilder.build();
         return objectMapper;
