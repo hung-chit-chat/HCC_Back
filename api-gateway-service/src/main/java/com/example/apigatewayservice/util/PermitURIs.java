@@ -14,7 +14,8 @@ public class PermitURIs {
             "/members/auth/signUp",
             "/members/auth/",
             "/members/auth/**",
-            "/jwt/refresh"
+            "/jwt/refresh",
+            "/gateway/test"
             );
 
     // Security 설정에서 사용할 배열

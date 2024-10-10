@@ -19,7 +19,7 @@ public class SecurityFilter {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, JwtRequestFilter jwtRequestFilter) {
         http
-                .authorizeExchange(exchange -> exchange.pathMatchers("/members/auth/**", "/jwt/**")
+                .authorizeExchange(exchange -> exchange.pathMatchers("/members/auth/**", "/jwt/**", "/gateway/test")
                         .permitAll()
                         .anyExchange()
                         .authenticated())
