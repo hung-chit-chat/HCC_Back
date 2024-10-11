@@ -65,8 +65,16 @@ public class FeedEntity extends BaseEntity {
         this.mediaList.add(mediaEntity);
     }
 
+    public void deleteMedia(MediaEntity mediaEntity) {
+        this.mediaList.remove(mediaEntity);
+    }
+
     @Override
     public String getId() {
         return this.feedId;
+    }
+
+    public void clearMedia() {
+        this.mediaList.clear();
     }
 }

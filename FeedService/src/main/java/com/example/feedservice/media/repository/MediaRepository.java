@@ -12,4 +12,6 @@ public interface MediaRepository extends JpaRepository<MediaEntity, String>, Med
 
     List<MediaEntity> findAllByFeed(FeedEntity feed);
 
+    void deleteByMediaId(String mediaId);
+
 }
