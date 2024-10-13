@@ -11,10 +11,9 @@ public class Converter {
     /**
      * SignUpmemberDto -> Entity
      */
-    public static Member RequestToEntity(SignUpMemberDto signUpMemberDto, String identifier) {
+    public static Member RequestToEntity(SignUpMemberDto signUpMemberDto) {
 
         return Member.builder()
-                .memberId(identifier)
                 .email(signUpMemberDto.getEmail())
                 .password(signUpMemberDto.getPassword())
                 .name(signUpMemberDto.getName())

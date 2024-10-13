@@ -1,22 +1,25 @@
 package com.memberservice.service;
 
+import com.memberservice.config.AppConfig;
+import com.memberservice.config.FilePath;
 import com.memberservice.config.MockAppConfig;
-import com.memberservice.exception.MemberNotFoundException;
 import com.memberservice.exception.PasswordNotMatchException;
 import com.memberservice.mock.FakeMemberRepository;
-import com.memberservice.mock.StubIdentifierFactory;
 import com.memberservice.model.entity.member.Gender;
 import com.memberservice.model.entity.member.Member;
 import com.memberservice.model.entity.member.Role;
-import com.memberservice.repository.MemberRepository;
 import com.memberservice.service.dto.request.SignUpMemberDto;
-import com.memberservice.service.port.IdentifierFactory;
+import com.memberservice.service.dto.response.Profile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
@@ -25,7 +28,7 @@ class MemberServiceTest {
     MemberService memberService;
     FakeMemberRepository memberRepository;
     PasswordEncoder passwordEncoder;
-    final IdentifierFactory stubIdentifierFactory = new StubIdentifierFactory();
+
 
     @BeforeEach
     void init() {
@@ -35,8 +38,8 @@ class MemberServiceTest {
                 memberRepository,
                 passwordEncoder,
                 MockAppConfig.objectMapper(),
-                stubIdentifierFactory,
-                MockAppConfig.redisTemplate()
+                MockAppConfig.redisTemplate(),
+                null
         );
     }
 
@@ -54,10 +57,10 @@ class MemberServiceTest {
                 Role.USER);
 
         // when
-        memberService.signUp(dto);
+        String memberId = memberService.signUp(dto);
 
         // then
-        Member member = memberRepository.cFindByMemberId(stubIdentifierFactory.generate());
+        Member member = memberRepository.findByMemberIdT(memberId);
         Assertions.assertNotNull(member);
         Assertions.assertEquals(member.getEmail(), "test@test.com");
     }
@@ -79,16 +82,15 @@ class MemberServiceTest {
                 Gender.MALE,
                 "010-0000-0000",
                 Role.USER);
-        memberService.signUp(dto);
-        String memberId = stubIdentifierFactory.generate();
+        String memberId = memberService.signUp(dto);
 
         // when
         memberService.changePhoneNumber(memberId, "010-1111-1111");
-        Member member = memberRepository.cFindByMemberId(memberId);
+        Member findMember = memberRepository.findByMemberIdT(memberId);
 
         // then
-        Assertions.assertEquals(member.getPhoneNumber(), "010-1111-1111");
-        Assertions.assertNotEquals(member.getPhoneNumber(), "010-0000-0000");
+        Assertions.assertEquals(findMember.getPhoneNumber(), "010-1111-1111");
+        Assertions.assertNotEquals(findMember.getPhoneNumber(), "010-0000-0000");
     }
 
     @Test
@@ -102,12 +104,11 @@ class MemberServiceTest {
                 Gender.MALE,
                 "010-0000-0000",
                 Role.USER);
-        memberService.signUp(dto);
-        String memberId = stubIdentifierFactory.generate();
+        String memberId = memberService.signUp(dto);
 
         // when
         memberService.changePassword(memberId, "asdf", "1234");
-        Member member = memberRepository.cFindByMemberId(memberId);
+        Member member = memberRepository.findByMemberIdT(memberId);
 
         // then
         boolean prevPwMatch = passwordEncoder.matches("asdf", member.getPassword());
@@ -128,12 +129,45 @@ class MemberServiceTest {
                 Gender.MALE,
                 "010-0000-0000",
                 Role.USER);
-        memberService.signUp(dto);
-        String memberId = stubIdentifierFactory.generate();
+        String memberId = memberService.signUp(dto);
 
         // then
         Assertions.assertThrows(PasswordNotMatchException.class, () -> {
             memberService.changePassword(memberId, "틀린비번", "1234");
         });
     }
+
+
+    @Test
+    @DisplayName("프로필 가져오기 테스트")
+    void getProfile() {
+        // given
+        SignUpMemberDto dto = new SignUpMemberDto(
+                "test@test.com",
+                "asdf",
+                "김영감",
+                Gender.MALE,
+                "010-0000-0000",
+                Role.USER);
+        String memberId = memberService.signUp(dto);
+
+        // when
+        List<Profile> profiles = memberService.getProfile(List.of(memberId));
+        Profile profile = profiles.get(0);
+
+        //then
+        Assertions.assertNotNull(profile);
+        Assertions.assertEquals(profile.getMemberId(), memberId);
+        Assertions.assertEquals(profile.getEmail(), "test@test.com");
+        Assertions.assertEquals(profile.getName(), "김영감");
+        Assertions.assertEquals(profile.getGender(), Gender.MALE);
+        Assertions.assertEquals(profile.getPhoneNumber(), "010-0000-0000");
+    }
+
+    //todo: 프로필 저장 테스트 추가
+//    public static void main(String[] args) {
+//        MemberServiceTest test = new MemberServiceTest();
+//        test.init();
+//        test.getProfileImagePath();
+//    }
 }

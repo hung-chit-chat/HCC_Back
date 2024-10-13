@@ -6,9 +6,9 @@ import com.memberservice.service.dto.request.Phone;
 import com.memberservice.service.dto.request.ReqMember;
 import com.memberservice.service.dto.request.RequestLoginDto;
 import com.memberservice.service.dto.request.SignUpMemberDto;
+import com.memberservice.service.dto.response.Profile;
 import com.memberservice.service.dto.response.ResponseTokenDto;
 import com.memberservice.service.MemberService;
-import com.memberservice.service.dto.response.SimpleResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -63,6 +66,26 @@ public class MemberRestController {
         return ResponseEntity.ok(responseTokenDto);
     }
 
+
+
+
+    @GetMapping("/getProfile")
+    public ResponseEntity<List<Profile>> getProfile(HttpServletRequest request, @RequestParam(required = false) List<String> memberIds) {
+
+        if(memberIds == null) {
+            memberIds = new ArrayList<>();
+        }
+
+        if(memberIds.isEmpty()) {
+            UserData userData = extractAuthentication.execute(request);
+            memberIds.add(userData.getMemberId());
+        }
+
+        List<Profile> profiles = memberService.getProfile(memberIds);
+        return ResponseEntity.ok(profiles);
+    }
+
+
     @PostMapping("/changePassword")
     public void changePassword(HttpServletRequest request, @RequestBody ReqMember reqMember) {
         UserData userData = extractAuthentication.execute(request);
@@ -73,5 +96,11 @@ public class MemberRestController {
     public void changePhoneNumber(HttpServletRequest request,@Valid @RequestBody Phone phone) {
         UserData userData = extractAuthentication.execute(request);
         memberService.changePhoneNumber(userData.getMemberId(), phone.getNumber());
+    }
+
+    @PutMapping("/changeProfileImage")
+    public void changeProfileImage(HttpServletRequest request, MultipartFile image) {
+        UserData userData = extractAuthentication.execute(request);
+        memberService.changeProfileImage(userData.getMemberId(), image);
     }
 }

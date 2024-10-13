@@ -18,7 +18,6 @@ public class FakeMemberRepository implements MemberRepository {
     public Member save(Member member) {
         if (member.getMemberId() == null || member.getMemberId().isBlank()) {
             Member newMember = Member.builder()
-                    .memberId(member.getMemberId())
                     .email(member.getEmail())
                     .password(member.getPassword())
                     .name(member.getName())
@@ -26,10 +25,14 @@ public class FakeMemberRepository implements MemberRepository {
                     .phoneNumber(member.getPhoneNumber())
                     .role(member.getRole())
                     .build();
+            newMember.prePersist();
             members.add(newMember);
             return newMember;
         } else {
-            members.removeIf(item -> Objects.equals(item.getMemberId(), member.getMemberId()));
+            boolean isRemove = members.removeIf(item -> Objects.equals(item.getMemberId(), member.getMemberId()));
+            if(!isRemove){
+                member.prePersist();
+            }
             members.add(member);
             return member;
         }

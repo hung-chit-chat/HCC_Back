@@ -14,9 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberView {
 
-    private Long id;
-
-    @JsonView(Views.MemberIdAndEmailAndRole.class)
+    @JsonView({Views.MemberIdAndEmailAndRole.class, Views.MemberIdAndProfileImgPath.class})
     private String memberId;
 
     @JsonView(Views.MemberIdAndEmailAndRole.class)
@@ -32,4 +30,7 @@ public class MemberView {
 
     @JsonView(Views.MemberIdAndEmailAndRole.class)
     private Role role;
+
+    @JsonView(Views.MemberIdAndProfileImgPath.class)
+    private String profileImgPath;
 }

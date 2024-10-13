@@ -9,7 +9,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-//    AuthenticationException
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        log.warn(e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorCode.Exception.getCode() + " - " + e.getMessage());
+    }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<String> handleMemberNotFoundException(AuthenticationException e) {

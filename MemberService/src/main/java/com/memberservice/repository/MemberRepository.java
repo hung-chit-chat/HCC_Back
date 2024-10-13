@@ -15,7 +15,11 @@ public interface MemberRepository extends Repository<Member, String> {
 
     Optional<Member> findByEmail(String email);
 
-    default Member cFindByMemberId(String memberId) {
+    default Member findByMemberIdT(String memberId) {
         return findByMemberId(memberId).orElseThrow(() -> new MemberNotFoundException("토큰에 있는 사용자를 찾을 수 없음"));
+    }
+
+    default Member findByMemberIdP(String memberId) {
+        return findByMemberId(memberId).orElseThrow(() -> new MemberNotFoundException("주어진 맴버아이디와 일치하는 사용자를 찾을 수 없음"));
     }
 }
