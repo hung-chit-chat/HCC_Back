@@ -1,7 +1,9 @@
 package com.example.feedservice.feed.controller;
 
 import com.example.feedservice.feed.dto.request.RequestFeedCreateDto;
+import com.example.feedservice.feed.dto.request.RequestFeedCursorDto;
 import com.example.feedservice.feed.dto.request.RequestFeedUpdateDto;
+import com.example.feedservice.feed.dto.response.ResponseFeedDto;
 import com.example.feedservice.feed.dto.response.ResponseSuccessDto;
 import com.example.feedservice.feed.service.FeedService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,16 @@ public class FeedController {
             return ResponseEntity.status(HttpStatus.OK).body(feedService.updateFeed(feedId, requestFeedUpdateDto));
         } catch(RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().result("error").build());
+        }
+    }
+
+    @GetMapping("/feeds")
+    public ResponseEntity<ResponseFeedDto> getFeedList(@RequestBody RequestFeedCursorDto requestFeedCursorDto) {
+
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(feedService.getFeedList(requestFeedCursorDto));
+        }catch(IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
