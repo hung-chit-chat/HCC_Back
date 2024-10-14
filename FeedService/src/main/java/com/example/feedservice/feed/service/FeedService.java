@@ -1,16 +1,21 @@
 package com.example.feedservice.feed.service;
 
+import com.example.feedservice.comment.dto.CommentDto;
 import com.example.feedservice.feed.dto.request.RequestFeedCursorDto;
 import com.example.feedservice.feed.dto.request.RequestFeedUpdateDto;
 import com.example.feedservice.feed.dto.response.ResponseFeedDto;
 import com.example.feedservice.feed.dto.response.ResponseSuccessDto;
 import com.example.feedservice.feed.dto.response.feed.FeedDto;
+import com.example.feedservice.feed.dto.response.member.ResponseMemberInfoDto;
+import com.example.feedservice.media.dto.MediaDto;
 import com.example.feedservice.media.service.MediaService;
 import com.example.feedservice.feed.dto.request.RequestFeedCreateDto;
 import com.example.feedservice.feed.entity.FeedEntity;
 import com.example.feedservice.feed.repository.FeedRepository;
 import com.example.feedservice.common.util.FeedUtil;
+import com.example.feedservice.reaction.dto.ReactionDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -34,6 +37,7 @@ public class FeedService {
     private final FeedRepository feedRepository;
     private final MediaService mediaService;
     private final FeedUtil feedUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 게시글 수정
@@ -115,16 +119,43 @@ public class FeedService {
 
         try{
             if(isValidLocalDateTime(cursor)) {
-                List<FeedEntity> feedEntities = feedRepository.findFeedByCursor(cursor);
+                Object o = redisTemplate.opsForValue().get(cursor.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                // Redis 체크 및 확인
+                if(true){
 
-                List<String> memberIds = feedEntities.stream()
-                        .map(FeedEntity::getMemberId)
-                        .toList();
+                } else {
 
-                // TODO :: member ID 로 rest 조회 , feedEntities 와 반환된 member 와 순서 맞춰서 DTO 반환
+                    // Feed Entity 조회 FetchJoin
+                    List<FeedEntity> feedEntities = feedRepository.findFeedByCursor(cursor);
 
+                    // Feed Entity 에서 memberId 추출
+                    Set<String> memberIds = feedEntities.stream()
+                            .map(FeedEntity::getMemberId)
+                            .collect(Collectors.toSet());
 
+                    // TODO :: member ID 로 rest 조회 , feedEntities 와 반환된 member 와 순서 맞춰서 DTO 반환
+                    List<ResponseMemberInfoDto> memberFromMemberService = this.getMemberFromMemberService(memberIds);
+                    Map<String, ResponseMemberInfoDto> memberMap = memberFromMemberService.stream().collect(Collectors.toMap(ResponseMemberInfoDto::getMemberId, ResponseMemberInfoDto -> ResponseMemberInfoDto));
 
+                    List<FeedDto> collect = feedEntities.stream().map(feedEntity -> {
+                        ResponseMemberInfoDto responseMemberInfoDto = memberMap.get(feedEntity.getMemberId());
+
+                        return FeedDto.builder()
+                                .feedId(feedEntity.getFeedId())
+                                .contents(feedEntity.getContents())
+                                .member(responseMemberInfoDto)
+                                .publicScope(feedEntity.getPublicScope())
+                                .commentDtos(feedEntity.getCommentList().stream().map(commentEntity -> new CommentDto(commentEntity.getCommentId(), commentEntity.getContents())).toList())
+                                .mediaDtos(feedEntity.getMediaList().stream().map(mediaEntity -> new MediaDto(mediaEntity.getMediaId(), mediaEntity.getMediaPath())).toList())
+                                .reactionDtos(feedEntity.getReactionList().stream().map(reactionEntity -> new ReactionDto(reactionEntity.getReactionId())).toList())
+                                .build();
+                    }).toList();
+
+                    return ResponseFeedDto.builder()
+                            .feedDto(collect)
+                            .hssMore(true)
+                            .build();
+                }
             }
         } catch(DateTimeParseException e){
             throw new IllegalArgumentException("Invalid cursor date");
@@ -153,8 +184,14 @@ public class FeedService {
     /**
      * TODO :: 멤버 ID 로 REST 통신
      * */
-    protected void getMemberFromMemberService(List<String> memberIds){
+    protected List<ResponseMemberInfoDto> getMemberFromMemberService(Set<String> memberIds){
 
+        ResponseMemberInfoDto response = ResponseMemberInfoDto.builder().build();
+
+        List<ResponseMemberInfoDto> responseMemberInfoDtos = new ArrayList<>();
+        responseMemberInfoDtos.add(response);
+
+        return responseMemberInfoDtos;
 
     }
 }

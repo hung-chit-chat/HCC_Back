@@ -38,6 +38,7 @@ public class FeedController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().result("error").build());
         }
     }
+    
 
     @GetMapping("/feeds")
     public ResponseEntity<ResponseFeedDto> getFeedList(@RequestBody RequestFeedCursorDto requestFeedCursorDto) {
