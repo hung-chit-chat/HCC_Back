@@ -114,3 +114,5 @@ services:
       dockerfile: Dockerfile_ApiGatewayService
     ports:
       - "8000:8000"
+    environment:
+      SPRING_PROFILES_ACTIVE: local # application-dev.yml 프로파일 활성화
