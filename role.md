@@ -1,12 +1,12 @@
 # 룰 작성 ##
 
 front   포트 3000 \
-redisChat 포트 8081 \
 h2        포트 8082 \
 kafkaChat 포트 8083 \
 redis 포트 6379 \
 member 포트 8080 \
 jwt 포트 8089
+socket 포트 8100
 
 
 # Commit Convention ##
