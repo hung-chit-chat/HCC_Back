@@ -5,7 +5,7 @@ import com.example.feedservice.feed.dto.request.RequestFeedCursorDto;
 import com.example.feedservice.feed.dto.request.RequestFeedUpdateDto;
 import com.example.feedservice.feed.dto.response.ResponseFeedDto;
 import com.example.feedservice.feed.dto.response.ResponseSuccessDto;
-import com.example.feedservice.feed.dto.response.feed.FeedDto;
+import com.example.feedservice.feed.dto.response.feed.FeedListDto;
 import com.example.feedservice.feed.dto.response.member.ResponseMemberInfoDto;
 import com.example.feedservice.media.dto.MediaDto;
 import com.example.feedservice.media.service.MediaService;
@@ -26,8 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -118,11 +116,12 @@ public class FeedService {
         }
 
         try{
+            // 커서(조회 시간)가 유효한지 체크 
             if(isValidLocalDateTime(cursor)) {
-                Object o = redisTemplate.opsForValue().get(cursor.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                FeedListDto feedListDto = (FeedListDto) redisTemplate.opsForValue().get(cursor.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 // Redis 체크 및 확인
-                if(true){
-
+                if(feedListDto != null){
+                    
                 } else {
 
                     // Feed Entity 조회 FetchJoin
@@ -137,23 +136,23 @@ public class FeedService {
                     List<ResponseMemberInfoDto> memberFromMemberService = this.getMemberFromMemberService(memberIds);
                     Map<String, ResponseMemberInfoDto> memberMap = memberFromMemberService.stream().collect(Collectors.toMap(ResponseMemberInfoDto::getMemberId, ResponseMemberInfoDto -> ResponseMemberInfoDto));
 
-                    List<FeedDto> collect = feedEntities.stream().map(feedEntity -> {
+                    List<FeedListDto> collect = feedEntities.stream().map(feedEntity -> {
                         ResponseMemberInfoDto responseMemberInfoDto = memberMap.get(feedEntity.getMemberId());
 
-                        return FeedDto.builder()
+                        return FeedListDto.builder()
                                 .feedId(feedEntity.getFeedId())
                                 .contents(feedEntity.getContents())
                                 .member(responseMemberInfoDto)
                                 .publicScope(feedEntity.getPublicScope())
-                                .commentDtos(feedEntity.getCommentList().stream().map(commentEntity -> new CommentDto(commentEntity.getCommentId(), commentEntity.getContents())).toList())
+                                .commentCount(feedEntity.getCommentList().size())           // 댓글 수만
                                 .mediaDtos(feedEntity.getMediaList().stream().map(mediaEntity -> new MediaDto(mediaEntity.getMediaId(), mediaEntity.getMediaPath())).toList())
-                                .reactionDtos(feedEntity.getReactionList().stream().map(reactionEntity -> new ReactionDto(reactionEntity.getReactionId())).toList())
+                                .reactionCount(feedEntity.getReactionList().size())         // 좋아요 수만
                                 .build();
                     }).toList();
 
                     return ResponseFeedDto.builder()
-                            .feedDto(collect)
-                            .hssMore(true)
+                            .feedListDto(collect)
+                            .hasMore(true)
                             .build();
                 }
             }

@@ -2,10 +2,8 @@ package com.example.feedservice.feed.dto.response.feed;
 
 import com.example.feedservice.comment.dto.CommentDto;
 import com.example.feedservice.feed.dto.response.member.ResponseMemberInfoDto;
-import com.example.feedservice.feed.entity.FeedEntity;
 import com.example.feedservice.media.dto.MediaDto;
 import com.example.feedservice.reaction.dto.ReactionDto;
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +11,13 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * 피드 목록
+ * */
 @Getter
 @NoArgsConstructor
-public class FeedDto {
+public class FeedListDto {
 
     private String feedId;
 
@@ -25,32 +27,32 @@ public class FeedDto {
 
     private String contents;
 
-    private List<CommentDto> commentDtos = new ArrayList<>();
+    private Integer commentCount;
 
     private List<MediaDto> mediaDtos = new ArrayList<>();
 
-    private List<ReactionDto> reactionDtos = new ArrayList<>();
+    private Integer reactionCount;
 
 
     @Builder
-    public FeedDto(String feedId, ResponseMemberInfoDto member, String publicScope, String contents, List<CommentDto> commentDtos, List<MediaDto> mediaDtos, List<ReactionDto> reactionDtos) {
+    public FeedListDto(String feedId, ResponseMemberInfoDto member, String publicScope, String contents, Integer commentCount, List<MediaDto> mediaDtos, Integer reactionCount) {
         this.feedId = feedId;
         this.member = member;
         this.publicScope = publicScope;
         this.contents = contents;
-        this.commentDtos = commentDtos;
+        this.commentCount = commentCount;
         this.mediaDtos = mediaDtos;
-        this.reactionDtos = reactionDtos;
+        this.reactionCount = reactionCount;
     }
 
     @Builder
-    public FeedDto(FeedDto feedDto, ResponseMemberInfoDto member,  List<CommentDto> commentDtos, List<MediaDto> mediaDtos, List<ReactionDto> reactionDtos) {
-        this.feedId = feedDto.getFeedId();
-        this.publicScope = feedDto.getPublicScope();
-        this.contents = feedDto.getContents();
+    public FeedListDto(FeedListDto feedListDto, ResponseMemberInfoDto member, Integer commentCount, List<MediaDto> mediaDtos, Integer reactionCount) {
+        this.feedId = feedListDto.getFeedId();
+        this.publicScope = feedListDto.getPublicScope();
+        this.contents = feedListDto.getContents();
         this.member = member;
-        this.commentDtos = commentDtos;
+        this.commentCount = commentCount;
         this.mediaDtos = mediaDtos;
-        this.reactionDtos = reactionDtos;
+        this.reactionCount = reactionCount;
     }
 }

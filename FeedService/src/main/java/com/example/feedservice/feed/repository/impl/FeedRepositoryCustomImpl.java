@@ -1,25 +1,12 @@
 package com.example.feedservice.feed.repository.impl;
 
-import com.example.feedservice.comment.dto.CommentDto;
-import com.example.feedservice.comment.entity.QCommentEntity;
-import com.example.feedservice.feed.dto.response.feed.FeedDto;
 import com.example.feedservice.feed.entity.FeedEntity;
-import com.example.feedservice.feed.entity.QFeedEntity;
 import com.example.feedservice.feed.repository.FeedRepositoryCustom;
-import com.example.feedservice.media.dto.MediaDto;
-import com.example.feedservice.media.entity.QMediaEntity;
-import com.example.feedservice.reaction.dto.ReactionDto;
-import com.example.feedservice.reaction.entity.QReactionEntity;
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.feedservice.comment.entity.QCommentEntity.commentEntity;
 import static com.example.feedservice.feed.entity.QFeedEntity.feedEntity;
