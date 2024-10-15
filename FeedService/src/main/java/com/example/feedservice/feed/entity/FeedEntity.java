@@ -2,14 +2,17 @@ package com.example.feedservice.feed.entity;
 
 import com.example.feedservice.comment.entity.CommentEntity;
 import com.example.feedservice.common.entity.BaseEntity;
+import com.example.feedservice.feed.dto.response.feed.ProjectionsFeedDto;
 import com.example.feedservice.media.entity.MediaEntity;
 import com.example.feedservice.reaction.entity.ReactionEntity;
+import com.querydsl.core.annotations.QueryProjection;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +53,18 @@ public class FeedEntity extends BaseEntity {
         this.contents = contents;
     }
 
+    @Builder
+    public FeedEntity(String feedId, String memberId, String publicScope, String contents, LocalDateTime localDateTime) {
+        this.feedId = feedId;
+        this.memberId = memberId;
+        this.publicScope = publicScope;
+        this.contents = contents;
+        this.setCreatedDate(localDateTime);
+    }
+
+    public FeedEntity(ProjectionsFeedDto projectionsFeedDto) {
+    }
+
     public void changeContents(String contents) {
         this.contents = contents;
     }
@@ -77,4 +92,5 @@ public class FeedEntity extends BaseEntity {
     public void clearMedia() {
         this.mediaList.clear();
     }
+
 }

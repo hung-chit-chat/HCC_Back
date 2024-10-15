@@ -27,6 +27,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    testImplementation 'io.projectreactor:reactor-test'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     annotationProcessor 'org.projectlombok:lombok'
@@ -49,6 +51,13 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.springframework/spring-webflux        // WebClient
     implementation 'org.springframework:spring-webflux:6.1.13'
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation 'org.mockito:mockito-core:5.14.1'
+
+    // json은  java8 localdatetime 직렬화를 하지않음
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
 
 }
 
