@@ -63,6 +63,7 @@ public class FeedEntity extends BaseEntity {
     }
 
     public FeedEntity(ProjectionsFeedDto projectionsFeedDto) {
+        //TODO:: this.~ 추가
     }
 
     public void changeContents(String contents) {
