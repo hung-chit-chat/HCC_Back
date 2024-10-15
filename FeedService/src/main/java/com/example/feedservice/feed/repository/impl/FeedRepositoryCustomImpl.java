@@ -27,28 +27,9 @@ public class FeedRepositoryCustomImpl implements FeedRepositoryCustom {
                 .leftJoin(feedEntity.mediaList, mediaEntity).fetchJoin()                // media List FetchJoin
                 .leftJoin(feedEntity.reactionList, reactionEntity).fetchJoin()          // reaction List FetchJoin
                 .where(feedEntity.createdDate.before(cursor))
+                .orderBy(feedEntity.createdDate.desc())                                 // 시간 역순
                 .limit(15)                                                              // 15개
                 .fetch();
 
-
-//        return Optional.of(fetchData.stream()
-//                .map(feed -> FeedDto.builder()
-//                        .feedId(feed.getFeedId())
-//                        .publicScope(feed.getPublicScope())
-//                        .contents(feed.getContents())
-//                        // comment List 변환 후 DTO 매핑
-//                        .commentDtos(feed.getCommentList().stream()
-//                                .map(comment -> new CommentDto(comment.getCommentId(), comment.getContents()))
-//                                .collect(Collectors.toList()))
-//                        // media List 변환 후 DTO 매핑
-//                        .mediaDtos(feed.getMediaList().stream()
-//                                .map(media -> new MediaDto(media.getMediaId(), media.getMediaPath()))
-//                                .collect(Collectors.toList()))
-//                        // reaction List 변환 후 DTO 매핑
-//                        .reactionDtos(feed.getReactionList().stream()
-//                                .map(reaction -> new ReactionDto(reaction.getReactionId()))
-//                                .collect(Collectors.toList()))
-//                        .build())
-//                .collect(Collectors.toList()));
     }
 }

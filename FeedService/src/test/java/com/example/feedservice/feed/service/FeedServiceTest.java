@@ -109,7 +109,23 @@ class FeedServiceTest {
         boolean validLocalDateTime = feedService.isValidLocalDateTime(validDateTime);
 
         Assertions.assertThat(validLocalDateTime).isTrue();
+    }
+
+
+    /**
+     *                                              멤버 데이터 생성 및 피드 목록조회 확인
+     * */
+
+    @DisplayName("멤버 데이터 생성")
+    @Test
+    @Rollback(false)
+    public void makeMember(){
+
+
+
 
 
     }
+
+
 }

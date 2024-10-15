@@ -20,4 +20,6 @@ public class FeedServiceApplication {
         return new JPAQueryFactory(em);
     }
 
+
+
 }

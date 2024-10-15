@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
 
@@ -41,7 +42,7 @@ public class FeedController {
     
 
     @GetMapping("/feeds")
-    public ResponseEntity<ResponseFeedDto> getFeedList(@RequestBody RequestFeedCursorDto requestFeedCursorDto) {
+    public ResponseEntity<Mono<ResponseFeedDto>> getFeedList(@RequestBody RequestFeedCursorDto requestFeedCursorDto) {
 
         try{
             return ResponseEntity.status(HttpStatus.OK).body(feedService.getFeedList(requestFeedCursorDto));

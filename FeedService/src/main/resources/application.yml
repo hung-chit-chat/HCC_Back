@@ -10,6 +10,8 @@ spring:
   application:
     name: feed-service
 
+domain: "http://localhost"
+
 upload:
   #path: "/Users/yudong-yeob/desktop/filetest"    # MAC 파일 경로
   path: "C:/Users/User/Desktop/filetest"          # Windows 파일 경로

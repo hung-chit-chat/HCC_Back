@@ -4,14 +4,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class ResponseMemberInfoDto {
+public class ResponseMemberProfileDto {
 
     private String memberId;
 
     private String memberProfilePath;
 
     @Builder
-    public ResponseMemberInfoDto(String memberId, String memberProfilePath) {
+    public ResponseMemberProfileDto(String memberId, String memberProfilePath) {
         this.memberId = memberId;
         this.memberProfilePath = memberProfilePath;
     }

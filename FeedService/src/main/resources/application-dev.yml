@@ -19,3 +19,5 @@ spring:
         #배치 인서트
         jdbc:
           batch_size: 10
+
+domain:  "http://member-service"
