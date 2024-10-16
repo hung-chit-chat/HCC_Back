@@ -17,10 +17,4 @@ public class FeedServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(FeedServiceApplication.class, args);
     }
-
-    @Bean
-    public JPAQueryFactory jpaQueryFactory(EntityManager em) {
-        return new JPAQueryFactory(em);
-    }
-
 }

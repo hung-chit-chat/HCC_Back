@@ -1,6 +1,7 @@
 package com.example.feedservice.feed.service;
 
 import com.example.feedservice.feed.dto.response.member.ResponseMemberDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,10 @@ import java.util.List;
  * */
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class FeedRestService {
+
+    private final WebClient webClient;
 
 
     @Value("${domain}")
@@ -32,11 +36,6 @@ public class FeedRestService {
     protected Mono<List<ResponseMemberDto>> communicateMemberService(List<String> memberIds) {
 
         String domainPlusPort = domain + ":8081";
-
-        // URL 빌드
-        WebClient webClient = WebClient.builder()
-                .baseUrl(domainPlusPort)
-                .build();
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(domainPlusPort + "/members/getProfile").queryParam("memberIds", memberIds);
 
