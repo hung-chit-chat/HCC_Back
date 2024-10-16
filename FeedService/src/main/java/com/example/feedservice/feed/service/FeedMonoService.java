@@ -24,36 +24,30 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+
+/**
+ * 비동기 처리를 위한 클래스
+ * */
+
 @Service
 @Transactional(readOnly = true)
 public class FeedMonoService {
 
     private final RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate;
 
-    public FeedMonoService(@Qualifier("feedListRedisTemplate") RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
+    private final FeedRestService feedRestService;
 
-    @Value("${domain}")
-    private String domain;
+    public FeedMonoService(@Qualifier("feedListRedisTemplate") RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate, FeedRestService feedRestService) {
+        this.redisTemplate = redisTemplate;
+        this.feedRestService = feedRestService;
+    }
 
     /**
      * member Service 에 비동기로 통신
      * */
     protected Mono<ResponseFeedDto> getMemberFromMemberService(RequestFeedCursorDto requestFeedCursorDto, List<String> memberIds, List<FeedEntity> feedEntities){
-        // URL 빌드
-        WebClient webClient = WebClient.builder()
-                .baseUrl(domain + ":8081")
-                .build();
 
-        // URL + GET 매핑 조회 
-        Mono<List<ResponseMemberDto>> listMono = webClient.get()
-                .uri("/getProfile/" + memberIds)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<ResponseMemberDto>>() {
-                });
-
-        return listMono.map(memberFromMemberService -> {
+        return feedRestService.communicateMemberService(memberIds).map(memberFromMemberService -> {
             // Map<memberId, responseMemberDto> 데이터 -> 맵으로 stream
             Map<String, ResponseMemberDto> memberMap = memberFromMemberService.stream().collect(Collectors.toMap(ResponseMemberDto::getMemberId, ResponseMemberDto -> ResponseMemberDto));
 
