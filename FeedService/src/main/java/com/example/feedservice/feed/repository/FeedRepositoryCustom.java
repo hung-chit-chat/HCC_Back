@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface FeedRepositoryCustom {
 
-    List<ProjectionsFeedDto> findFeedByCursor(LocalDateTime cursor);
+    List<FeedEntity> findFeedByCursor(LocalDateTime cursor);
 
 }

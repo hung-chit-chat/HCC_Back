@@ -56,31 +56,23 @@ class FeedRepositoryTest {
     }
 
 
-    @DisplayName("게시글 조회 테스트 querydsl")
+    @DisplayName("게시글 조회 테스트 querydslTest")
     @Test
     @Transactional(readOnly = true)
-    public void selectFeedQueryDsl() throws Exception{
+    public void selectFeedQueryDslTest() throws Exception{
 
-        List<ProjectionsFeedDto> all = feedRepository.findFeedByCursor(LocalDateTime.now());
+        List<FeedEntity> all = feedRepository.findFeedByCursor(LocalDateTime.now());
 
-        for (ProjectionsFeedDto projectionsFeedDto : all) {
-            System.out.println("projectionsFeedDto = " + projectionsFeedDto.getFeedEntity().getFeedId());
-            System.out.println("projectionsFeedDto = " + projectionsFeedDto.getFeedEntity().getMemberId());
-            System.out.println("projectionsFeedDto = " + projectionsFeedDto.getFeedEntity().getMediaList().size());
-            System.out.println("projectionsFeedDto = " + projectionsFeedDto.getFeedEntity().getMediaList().get(0).getMediaPath());
-            System.out.println("projectionsFeedDto = " + projectionsFeedDto.getCommentCount());
-            System.out.println("projectionsFeedDto = " + projectionsFeedDto.getReactionCount());
+        for (FeedEntity feedEntity : all) {
+            System.out.println("feedEntity = " + feedEntity.getFeedId());
+            System.out.println("feedEntity = " + feedEntity.getMemberId());
+            System.out.println("feedEntity = " + feedEntity.getMediaList().size());
         }
 
         /**
-         * 테스트 완료 2024-10-15
-         *
-         * feed에 등록된 파일까지 확인 완료
-         * projectionsFeedDto = 5
-         * projectionsFeedDto = C:\Users\User\Desktop\filetest\2aab9d06-6f47-415e-a79e-fd18a8adb719/71cfe7bc-75a6-497b-a5af-3b08fb2bcba9.png
-         * projectionsFeedDto = 0
-         * projectionsFeedDto = 0
+         * 테스트 완료 2024-10-16
          * */
+
 
     }
 

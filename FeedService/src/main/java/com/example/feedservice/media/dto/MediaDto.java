@@ -13,9 +13,12 @@ public class MediaDto {
 
     private String mediaPath;
 
+    private Integer sequence;
+
     @Builder
-    public MediaDto(String mediaId, String mediaPath) {
+    public MediaDto(String mediaId, String mediaPath, Integer sequence) {
         this.mediaId = mediaId;
         this.mediaPath = mediaPath;
+        this.sequence = sequence;
     }
 }

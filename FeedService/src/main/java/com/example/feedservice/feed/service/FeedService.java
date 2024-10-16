@@ -12,6 +12,7 @@ import com.example.feedservice.feed.entity.FeedEntity;
 import com.example.feedservice.feed.repository.FeedRepository;
 import com.example.feedservice.common.util.FeedUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FeedService {
 
@@ -35,6 +35,14 @@ public class FeedService {
     private final FeedUtil feedUtil;
     private final RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate;
     private final FeedMonoService feedMonoService;
+
+    public FeedService(FeedRepository feedRepository, MediaService mediaService, FeedUtil feedUtil,@Qualifier("feedListRedisTemplate") RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate, FeedMonoService feedMonoService) {
+        this.feedRepository = feedRepository;
+        this.mediaService = mediaService;
+        this.feedUtil = feedUtil;
+        this.redisTemplate = redisTemplate;
+        this.feedMonoService = feedMonoService;
+    }
 
     /**
      * 게시글 수정
@@ -124,9 +132,8 @@ public class FeedService {
                 } else {
 
                     // Feed Entity 조회 FetchJoin
-                    List<ProjectionsFeedDto> projectionsFeedDtos = feedRepository.findFeedByCursor(cursor);
 
-                    List<FeedEntity> feedEntities = projectionsFeedDtos.stream().map(FeedEntity::new).toList();
+                    List<FeedEntity> feedEntities = feedRepository.findFeedByCursor(cursor);
 
                     // Feed Entity 에서 memberId 추출
                     Set<String> memberIds = feedEntities.stream()

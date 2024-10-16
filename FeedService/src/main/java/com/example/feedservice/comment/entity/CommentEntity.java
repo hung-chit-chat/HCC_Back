@@ -23,6 +23,8 @@ public class CommentEntity extends BaseEntity {
     @Column(columnDefinition = "LONGTEXT")
     private String contents;
 
+    private Integer sequence;
+
     /**
      * TODO :: 편의메서드 적용 해야함
      * */

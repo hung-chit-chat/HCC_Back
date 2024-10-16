@@ -9,6 +9,7 @@ import com.example.feedservice.feed.dto.response.member.ResponseMemberProfileDto
 import com.example.feedservice.feed.entity.FeedEntity;
 import com.example.feedservice.media.dto.MediaDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,11 +25,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FeedMonoService {
 
     private final RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate;
+
+    public FeedMonoService(@Qualifier("feedListRedisTemplate") RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     @Value("${domain}")
     private String domain;
@@ -64,13 +68,13 @@ public class FeedMonoService {
                         .publicScope(feedEntity.getPublicScope())
                         .createdDate(feedEntity.getCreatedDate())
                         .commentCount(feedEntity.getCommentList().size())           // 댓글 수만
-                        .mediaDtos(feedEntity.getMediaList().stream().map(mediaEntity -> new MediaDto(mediaEntity.getMediaId(), mediaEntity.getMediaPath())).toList())
+                        .mediaDtos(feedEntity.getMediaList().stream().map(mediaEntity -> new MediaDto(mediaEntity.getMediaId(), mediaEntity.getMediaPath(), mediaEntity.getSequence())).toList())
                         .reactionCount(feedEntity.getReactionList().size())         // 좋아요 수만
                         .build();
             }).toList();
 
             // DB 에서 select 한 데이터 중 5개만 제외하고 나머지는 레디스에 저장, 제외한 데이터는 반환
-            return saveRedisAndReturnRemainingFeed(requestFeedCursorDto.getCursorDate(), collect);
+            return this.saveRedisAndReturnRemainingFeed(requestFeedCursorDto.getCursorDate(), collect);
         });
     }
 

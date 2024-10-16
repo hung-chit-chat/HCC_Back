@@ -22,23 +22,17 @@ public class FeedRepositoryCustomImpl implements FeedRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-
     @Override
-    public List<ProjectionsFeedDto> findFeedByCursor(LocalDateTime cursor) {
+    public List<FeedEntity> findFeedByCursor(LocalDateTime cursor) {
 
-        return queryFactory.select(Projections.constructor(ProjectionsFeedDto.class,
-                        feedEntity,
-                        commentEntity.count(),
-                        reactionEntity.count()
-                        ))
+        return queryFactory.select(feedEntity)
                 .from(feedEntity)
-                .leftJoin(feedEntity.commentList, commentEntity).fetchJoin()            // comment List FetchJoin
-                .leftJoin(feedEntity.mediaList, mediaEntity)                // media List FetchJoin
-                .leftJoin(feedEntity.reactionList, reactionEntity)          // reaction List FetchJoin
+                .leftJoin(feedEntity.mediaList, mediaEntity).fetchJoin()
+                .leftJoin(feedEntity.commentList, commentEntity)
+                .leftJoin(feedEntity.reactionList, reactionEntity)
                 .where(feedEntity.createdDate.before(cursor))
-                .groupBy(feedEntity.feedId)
-                .orderBy(feedEntity.createdDate.desc())                                 // 시간 역순
-                .limit(15)                                                              // 15개
+                .orderBy(feedEntity.createdDate.desc())
+                .limit(15)
                 .fetch();
 
     }
