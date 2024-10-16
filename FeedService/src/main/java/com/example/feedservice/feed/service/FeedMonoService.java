@@ -33,11 +33,11 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class FeedMonoService {
 
-    private final RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate;
+    private final RedisTemplate<String, ResponseFeedDto> redisTemplate;
 
     private final FeedRestService feedRestService;
 
-    public FeedMonoService(@Qualifier("feedListRedisTemplate") RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate, FeedRestService feedRestService) {
+    public FeedMonoService(@Qualifier("feedListRedisTemplate") RedisTemplate<String, ResponseFeedDto> redisTemplate, FeedRestService feedRestService) {
         this.redisTemplate = redisTemplate;
         this.feedRestService = feedRestService;
     }
@@ -76,7 +76,7 @@ public class FeedMonoService {
      * 데이터(0~15) 중 5개를 제외한 나머지 데이터 레디스에 저장
      * 제외한 데이터는 반환
      * */
-    private ResponseFeedDto saveRedisAndReturnRemainingFeed(LocalDateTime cursorDate, List<FeedListDto> feedList){
+    protected ResponseFeedDto saveRedisAndReturnRemainingFeed(LocalDateTime cursorDate, List<FeedListDto> feedList){
         // 5개를 제외한 데이터 저장
         List<FeedListDto> feedSkipList = feedList.stream().skip(5).toList();
 
@@ -85,6 +85,8 @@ public class FeedMonoService {
             int batchSize = 5;
             int remainingSize = feedSkipList.size();        // 반환하고 남은 데이터
             int loopCount = (int) Math.ceil((double) remainingSize / batchSize);
+            LocalDateTime nextCursorDate = null;
+            LocalDateTime returnNextCursorDate = null;
 
             for (int i = 0; i < loopCount; i++) {
                 boolean hasMore = true;
@@ -95,29 +97,45 @@ public class FeedMonoService {
                         .limit(batchSize)
                         .toList();
 
-
-                // 마지막 루프면 false
-                if(i == loopCount - 1){
-                    hasMore = false;
-                }
-
                 // 각 배치의 마지막 데이터를 새로운 커서로 설정
                 LocalDateTime newCursorDate = feedBatch.get(feedBatch.size() - 1).getCreatedDate();
 
-                ResponseFeedDto batchResponse = ResponseFeedDto.builder()
-                        .feedListDto(feedBatch)
-                        .hasMore(hasMore)
-                        .build();
+                // 마지막 루프면 false
+                if(i == loopCount - 1){
+                    returnNextCursorDate = nextCursorDate;
+                    hasMore = false;
+                    nextCursorDate = null;
+                } else{
+                    nextCursorDate = newCursorDate;
+                }
 
-                redisTemplate.opsForValue().set(new CursorDto(newCursorDate),
+                ResponseFeedDto batchResponse;
+                if(nextCursorDate != null) {        // 다음 커서가 있을때
+                    batchResponse = ResponseFeedDto.builder()
+                            .feedListDto(feedBatch)
+                            .cursorDate(nextCursorDate.toString())
+                            .nextCursorDate(nextCursorDate.toString())
+                            .hasMore(hasMore)
+                            .build();
+                } else{                             // 마지막 커서일때
+                    batchResponse = ResponseFeedDto.builder()
+                            .feedListDto(feedBatch)
+                            .cursorDate(null)
+                            .nextCursorDate(null)
+                            .hasMore(hasMore)
+                            .build();
+                }
+
+                redisTemplate.opsForValue().set(newCursorDate.toString(),
                         batchResponse, 600, TimeUnit.SECONDS); // 각 배치를 저장할 때, 새로운 커서를 키로 사용하여 Redis 에 저장
 
             }
 
             // 첫 데이터 5개를 반환
             return ResponseFeedDto.builder()
-                    .cursorDate(cursorDate)
+                    .cursorDate(cursorDate.toString())
                     .feedListDto(feedList.stream().limit(5).toList())
+                    .nextCursorDate(returnNextCursorDate.toString())
                     .hasMore(true)
                     .build();
 
@@ -125,7 +143,8 @@ public class FeedMonoService {
 
             // 데이터가 5개 이하인 경우 모두 반환
             return ResponseFeedDto.builder()
-                    .cursorDate(cursorDate)
+                    .cursorDate(cursorDate.toString())
+                    .nextCursorDate(null)
                     .feedListDto(feedList)
                     .hasMore(false)
                     .build();

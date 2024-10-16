@@ -203,14 +203,8 @@ class FeedServiceTest {
                 new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(25),  7, null, 0 )
         );
 
-        // FeedMonoService에서 가짜 데이터 반환
-        Mono<ResponseFeedDto> mockResponseFeedDto = Mono.just(new ResponseFeedDto(loca, mockFeeds, true));
-
-
         RequestFeedCursorDto requestFeedCursorDto = new RequestFeedCursorDto(loca);
 
-        Mockito.when(feedMonoService.getMemberFromMemberService(Mockito.any(), Mockito.anyList(), Mockito.anyList()))
-                .thenReturn(mockResponseFeedDto);
 
         Mono<ResponseFeedDto> result = feedService.getFeedList(requestFeedCursorDto);
 

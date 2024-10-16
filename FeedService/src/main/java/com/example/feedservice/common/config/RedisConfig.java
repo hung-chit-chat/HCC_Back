@@ -3,6 +3,8 @@ package com.example.feedservice.common.config;
 import com.example.feedservice.feed.dto.redis.CursorDto;
 import com.example.feedservice.feed.dto.response.ResponseFeedDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,18 +39,31 @@ public class RedisConfig {
      * 피드 서비스 레디스 
      * */
     @Bean
-    public RedisTemplate<CursorDto, ResponseFeedDto> feedListRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, ResponseFeedDto> feedListRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
 
-        // Jackson2JsonRedisSerializer 설정 (최신 생성자 사용)   LocalDateTime 직렬화
-        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
+        // ObjectMapper 설정
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());  // LocalDateTime 처리를 위한 모듈 등록
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);  // ISO 8601 날짜 포맷 사용
 
-        RedisTemplate<CursorDto, ResponseFeedDto> template = new RedisTemplate<>();
+
+        // GenericJackson2JsonRedisSerializer 설정
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+
+        // RedisTemplate 설정
+        RedisTemplate<String, ResponseFeedDto> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
-        template.setKeySerializer(serializer);
-        template.setHashKeySerializer(serializer);
-        template.setValueSerializer(serializer);
+
+        // Key와 Value 직렬화 방식 설정
+        template.setKeySerializer(new StringRedisSerializer());  // 문자열 직렬화
+        template.setValueSerializer(serializer);  // GenericJackson2JsonRedisSerializer 사용
+
+        // Hash key, value 설정 (필요에 따라)
+        template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(serializer);
-        template.afterPropertiesSet();
+
+        template.afterPropertiesSet();  // 모든 설정 완료 후 초기화
+
         return template;
     }
 }

@@ -11,7 +11,8 @@ import java.util.List;
 @Getter
 public class ResponseFeedDto {
 
-    private LocalDateTime cursorDate;
+    private String cursorDate;
+    private String nextCursorDate;
 
     private List<FeedListDto> feedListDto;
 
@@ -19,8 +20,9 @@ public class ResponseFeedDto {
     private boolean hasMore;
 
     @Builder
-    public ResponseFeedDto(LocalDateTime cursorDate, List<FeedListDto> feedListDto, boolean hasMore) {
+    public ResponseFeedDto(String cursorDate, String nextCursorDate, List<FeedListDto> feedListDto, boolean hasMore) {
         this.cursorDate = cursorDate;
+        this.nextCursorDate = nextCursorDate;
         this.feedListDto = feedListDto;
         this.hasMore = hasMore;
     }

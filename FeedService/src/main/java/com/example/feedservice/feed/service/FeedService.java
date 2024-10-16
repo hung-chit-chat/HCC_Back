@@ -33,10 +33,10 @@ public class FeedService {
     private final FeedRepository feedRepository;
     private final MediaService mediaService;
     private final FeedUtil feedUtil;
-    private final RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate;
+    private final RedisTemplate<String, ResponseFeedDto> redisTemplate;
     private final FeedMonoService feedMonoService;
 
-    public FeedService(FeedRepository feedRepository, MediaService mediaService, FeedUtil feedUtil,@Qualifier("feedListRedisTemplate") RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate, FeedMonoService feedMonoService) {
+    public FeedService(FeedRepository feedRepository, MediaService mediaService, FeedUtil feedUtil,@Qualifier("feedListRedisTemplate") RedisTemplate<String, ResponseFeedDto> redisTemplate, FeedMonoService feedMonoService) {
         this.feedRepository = feedRepository;
         this.mediaService = mediaService;
         this.feedUtil = feedUtil;
