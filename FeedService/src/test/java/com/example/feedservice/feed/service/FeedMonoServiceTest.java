@@ -3,6 +3,7 @@ package com.example.feedservice.feed.service;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,6 +17,8 @@ class FeedMonoServiceTest {
 
     @Autowired FeedService feedService;
     @Autowired FeedMonoService feedMonoService;
+
+    @Mock FeedRestService feedRestService;
 
     @DisplayName("GetMemberFromMemberService 테스트")
     @Test
@@ -32,7 +35,7 @@ class FeedMonoServiceTest {
     }
 
 
-    @DisplayName("SaveRedisAndReturnRemainingFeed 테스트")
+    @ DisplayName("SaveRedisAndReturnRemainingFeed 테스트")
     @Test
     public void testSaveRedisAndReturnRemainingFeed(){
 

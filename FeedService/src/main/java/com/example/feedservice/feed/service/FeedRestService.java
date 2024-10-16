@@ -6,8 +6,12 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,14 +30,22 @@ public class FeedRestService {
      * @param (memberIds) - List
      * */
     protected Mono<List<ResponseMemberDto>> communicateMemberService(List<String> memberIds) {
+
+        String domainPlusPort = domain + ":8081";
+
         // URL 빌드
         WebClient webClient = WebClient.builder()
-                .baseUrl(domain + ":8081")
+                .baseUrl(domainPlusPort)
                 .build();
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(domainPlusPort + "/members/getProfile").queryParam("memberIds", memberIds);
+
+        // URI 빌드
+        URI uri = uriBuilder.build().encode().toUri();
 
         // URL + GET 매핑 조회 및 반환
         return webClient.get()
-                .uri("/getProfile/" + memberIds)
+                .uri(uri)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<ResponseMemberDto>>() {
                 });
