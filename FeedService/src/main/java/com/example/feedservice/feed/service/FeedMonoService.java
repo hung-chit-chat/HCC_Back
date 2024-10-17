@@ -116,7 +116,7 @@ public class FeedMonoService {
                 // 마지막 루프면 hasMore = false, nextCursorDate는 null
                 if (i == loopCount - 1) {
                     hasMore = false;
-                    nextCursorDate = feedBatch.get(0).getCreatedDate();
+                    nextCursorDate = null;
                 }
 
                 ResponseFeedDto batchResponse = ResponseFeedDto.builder()
@@ -146,7 +146,7 @@ public class FeedMonoService {
             // 데이터가 5개 이하인 경우 모두 반환
             return ResponseFeedDto.builder()
                     .cursorDate(cursorDate.toString())
-                    .nextCursorDate(feedList.get(feedList.size() - 1).getCreatedDate().toString())
+                    .nextCursorDate(null)
                     .feedListDto(feedList)
                     .hasMore(false)
                     .build();
