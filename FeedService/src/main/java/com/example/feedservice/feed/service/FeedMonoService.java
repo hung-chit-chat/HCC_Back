@@ -80,62 +80,64 @@ public class FeedMonoService {
         // 5개를 제외한 데이터 저장
         List<FeedListDto> feedSkipList = feedList.stream().skip(5).toList();
 
+        LocalDateTime returnNextCursorDate = null;
+
+        long size = feedList.stream().limit(5).toList().size();
+
         // 데이터가 남았는지 확인
         if(!feedSkipList.isEmpty()){
+            returnNextCursorDate = feedList.get(feedList.stream().limit(5).toList().size()).getCreatedDate();
             int batchSize = 5;
             int remainingSize = feedSkipList.size();        // 반환하고 남은 데이터
-            int loopCount = (int) Math.ceil((double) remainingSize / batchSize);
-            LocalDateTime nextCursorDate = null;
-            LocalDateTime returnNextCursorDate = null;
+            int loopCount = (int) Math.ceil((double) remainingSize / batchSize);        // 나눠야 할 배치 수 계산 1~2    0이면 5개 이하
 
             for (int i = 0; i < loopCount; i++) {
                 boolean hasMore = true;
 
                 // 현재 배치에서 5개씩 데이터 가져옴
-                List<FeedListDto> feedBatch = feedSkipList.stream()
-                        .skip((long) i * batchSize)
+                List<FeedListDto> feedBatch = feedList.stream()
+                        .skip((long) (i + 1) * batchSize)
                         .limit(batchSize)
                         .toList();
 
-                // 각 배치의 마지막 데이터를 새로운 커서로 설정
-                LocalDateTime newCursorDate = feedBatch.get(feedBatch.size() - 1).getCreatedDate();
+                LocalDateTime nextCursorDate = null;
 
-                // 마지막 루프면 false
-                if(i == loopCount - 1){
-                    returnNextCursorDate = nextCursorDate;
-                    hasMore = false;
-                    nextCursorDate = null;
-                } else{
-                    nextCursorDate = newCursorDate;
+                // 다음 배치의 첫 번째 항목을 nextCursorDate 로 설정
+                if(i + 1 < loopCount){
+                    List<FeedListDto> nextFeedBatch = feedSkipList.stream()
+                            .skip((long) (i + 1) * batchSize)  // 다음 배치로 넘어감
+                            .limit(1)  // 첫 번째 항목만 가져옴
+                            .toList();
+                    if(!nextFeedBatch.isEmpty()){
+                        nextCursorDate = nextFeedBatch.get(0).getCreatedDate();
+                    }
                 }
 
-                ResponseFeedDto batchResponse;
-                if(nextCursorDate != null) {        // 다음 커서가 있을때
-                    batchResponse = ResponseFeedDto.builder()
+                // 마지막 루프면 hasMore = false, nextCursorDate는 null
+                if (i == loopCount - 1) {
+                    hasMore = false;
+                    nextCursorDate = feedBatch.get(0).getCreatedDate();
+                }
+
+                ResponseFeedDto batchResponse = ResponseFeedDto.builder()
                             .feedListDto(feedBatch)
-                            .cursorDate(nextCursorDate.toString())
+                            .cursorDate(nextCursorDate != null ? nextCursorDate.toString() : feedBatch.get(0).getCreatedDate().toString())
                             .nextCursorDate(nextCursorDate.toString())
                             .hasMore(hasMore)
                             .build();
-                } else{                             // 마지막 커서일때
-                    batchResponse = ResponseFeedDto.builder()
-                            .feedListDto(feedBatch)
-                            .cursorDate(null)
-                            .nextCursorDate(null)
-                            .hasMore(hasMore)
-                            .build();
-                }
 
-                redisTemplate.opsForValue().set(newCursorDate.toString(),
-                        batchResponse, 600, TimeUnit.SECONDS); // 각 배치를 저장할 때, 새로운 커서를 키로 사용하여 Redis 에 저장
 
+                // 각 배치를 저장할 때, 새로운 커서를 키로 사용하여 Redis에 저장
+                String redisKey = feedBatch.get(0).getCreatedDate().toString();
+                redisTemplate.opsForValue().set(redisKey,
+                        batchResponse, 600, TimeUnit.SECONDS);
             }
 
             // 첫 데이터 5개를 반환
             return ResponseFeedDto.builder()
                     .cursorDate(cursorDate.toString())
                     .feedListDto(feedList.stream().limit(5).toList())
-                    .nextCursorDate(returnNextCursorDate.toString())
+                    .nextCursorDate(returnNextCursorDate != null ? returnNextCursorDate.toString() : feedList.get(feedList.size() - 1).getCreatedDate().toString())
                     .hasMore(true)
                     .build();
 
@@ -144,7 +146,7 @@ public class FeedMonoService {
             // 데이터가 5개 이하인 경우 모두 반환
             return ResponseFeedDto.builder()
                     .cursorDate(cursorDate.toString())
-                    .nextCursorDate(null)
+                    .nextCursorDate(feedList.get(feedList.size() - 1).getCreatedDate().toString())
                     .feedListDto(feedList)
                     .hasMore(false)
                     .build();

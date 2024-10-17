@@ -125,7 +125,7 @@ public class FeedService {
         try{
             // 커서(조회 시간)가 유효한지 체크 
             if(isValidLocalDateTime(cursor)) {
-                ResponseFeedDto responseFeedDto = redisTemplate.opsForValue().get(requestFeedCursorDto);
+                ResponseFeedDto responseFeedDto = redisTemplate.opsForValue().get(requestFeedCursorDto.getCursorDate().toString());
                 // Redis 체크 및 확인
                 if(responseFeedDto != null){
                     return Mono.just(responseFeedDto);

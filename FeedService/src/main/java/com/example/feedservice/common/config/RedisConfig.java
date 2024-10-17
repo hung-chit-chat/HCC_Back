@@ -2,8 +2,15 @@ package com.example.feedservice.common.config;
 
 import com.example.feedservice.feed.dto.redis.CursorDto;
 import com.example.feedservice.feed.dto.response.ResponseFeedDto;
+import com.example.feedservice.feed.dto.response.feed.FeedListDto;
+import com.example.feedservice.feed.dto.response.member.ResponseMemberProfileDto;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +20,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -41,11 +51,18 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, ResponseFeedDto> feedListRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
 
+        PolymorphicTypeValidator polymorphicTypeValidator = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType(ResponseFeedDto.class)
+                .allowIfSubType(FeedListDto.class)
+                .allowIfSubType(ResponseMemberProfileDto.class)
+                .allowIfSubType("java.util.ImmutableCollections$ListN")  // 불변 리스트 타입 허용
+                .build();
+
         // ObjectMapper 설정
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());  // LocalDateTime 처리를 위한 모듈 등록
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);  // ISO 8601 날짜 포맷 사용
-
+        objectMapper.activateDefaultTyping(polymorphicTypeValidator, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.WRAPPER_OBJECT);
 
         // GenericJackson2JsonRedisSerializer 설정
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);

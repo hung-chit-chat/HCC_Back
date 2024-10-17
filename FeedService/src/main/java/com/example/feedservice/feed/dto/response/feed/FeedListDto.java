@@ -2,6 +2,10 @@ package com.example.feedservice.feed.dto.response.feed;
 
 import com.example.feedservice.feed.dto.response.member.ResponseMemberProfileDto;
 import com.example.feedservice.media.dto.MediaDto;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +19,7 @@ import java.util.List;
  * 피드 목록
  * */
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FeedListDto {
 
     private String feedId;

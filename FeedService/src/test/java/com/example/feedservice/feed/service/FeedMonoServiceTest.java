@@ -111,25 +111,37 @@ class FeedMonoServiceTest {
 
         List<FeedListDto> sortedList = mockFeeds.stream().sorted(Comparator.comparing(FeedListDto::getCreatedDate).reversed()).toList();
 
+        // 첫 5개 데이터
         ResponseFeedDto responseFeedDto = feedMonoService.saveRedisAndReturnRemainingFeed(loca, sortedList);
 
         Assertions.assertThat(responseFeedDto).isNotNull();
         Assertions.assertThat(responseFeedDto.getFeedListDto().size()).isEqualTo(5);
         Assertions.assertThat(responseFeedDto.getCursorDate()).isEqualTo(loca.toString());
+        Assertions.assertThat(responseFeedDto.getNextCursorDate()).isNotNull();
         Assertions.assertThat(responseFeedDto.isHasMore()).isTrue();
 
         /**
          * 여기까지 테스트 완료
          * */
 
-//        ObjectMapper objectMapper = new ObjectMapper();
-//
-//        Object redisData = redisTemplate.opsForValue().get(responseFeedDto.getNextCursorDate());
-//
-//        // LinkedHashMap을 ResponseFeedDto로 변환
-//        ResponseFeedDto redisData2 = objectMapper.convertValue(redisData, ResponseFeedDto.class);
-//
-//        Assertions.assertThat(redisData2.isHasMore()).isFalse();
+        // 두번째 5개 데이터
+        ResponseFeedDto redisFeedDto = redisTemplate.opsForValue().get(responseFeedDto.getNextCursorDate());
+        Assertions.assertThat(redisFeedDto.getFeedListDto().size()).isEqualTo(5);
+        assert redisFeedDto != null;
+        Assertions.assertThat(redisFeedDto.isHasMore()).isTrue();
+
+        // 세번재 2개 데이터
+        ResponseFeedDto redisFeedDtoNext = redisTemplate.opsForValue().get(redisFeedDto.getNextCursorDate());
+        Assertions.assertThat(redisFeedDtoNext.getFeedListDto().size()).isEqualTo(2);
+        assert redisFeedDtoNext != null;
+        Assertions.assertThat(redisFeedDtoNext.isHasMore()).isFalse();
+
+
+        /**
+         * 테스트 완료
+         * */
+
+
 
     }
 
