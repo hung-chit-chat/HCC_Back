@@ -1,13 +1,8 @@
 package com.example.feedservice.feed.service;
 
 import com.example.feedservice.feed.dto.redis.CursorDto;
-import com.example.feedservice.feed.dto.request.RequestFeedCursorDto;
 import com.example.feedservice.feed.dto.request.RequestFeedUpdateDto;
 import com.example.feedservice.feed.dto.response.ResponseFeedDto;
-import com.example.feedservice.feed.dto.response.feed.FeedListDto;
-import com.example.feedservice.feed.dto.response.feed.ProjectionsFeedDto;
-import com.example.feedservice.feed.dto.response.member.ResponseMemberDto;
-import com.example.feedservice.feed.dto.response.member.ResponseMemberProfileDto;
 import com.example.feedservice.feed.entity.FeedEntity;
 import com.example.feedservice.feed.repository.FeedRepository;
 import com.example.feedservice.media.service.MediaService;
@@ -15,38 +10,24 @@ import com.example.feedservice.feed.dto.request.RequestFeedCreateDto;
 import com.example.feedservice.media.repository.MediaRepository;
 import com.example.feedservice.common.util.FeedUtil;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class FeedServiceTest {
