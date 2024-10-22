@@ -38,9 +38,11 @@ public class FeedListDto {
 
     private Integer reactionCount;
 
+    private Boolean isLiked;
+
 
     @Builder
-    public FeedListDto(String feedId, ResponseMemberProfileDto member, String publicScope, String contents, LocalDateTime createdDate, Integer commentCount, List<MediaDto> mediaDtos, Integer reactionCount) {
+    public FeedListDto(String feedId, ResponseMemberProfileDto member, String publicScope, String contents, LocalDateTime createdDate, Integer commentCount, List<MediaDto> mediaDtos, Integer reactionCount, Boolean isLiked) {
         this.feedId = feedId;
         this.member = member;
         this.publicScope = publicScope;
@@ -49,10 +51,11 @@ public class FeedListDto {
         this.commentCount = commentCount;
         this.mediaDtos = mediaDtos;
         this.reactionCount = reactionCount;
+        this.isLiked = isLiked;
     }
 
     @Builder
-    public FeedListDto(FeedListDto feedListDto, ResponseMemberProfileDto member, Integer commentCount, List<MediaDto> mediaDtos, Integer reactionCount) {
+    public FeedListDto(FeedListDto feedListDto, ResponseMemberProfileDto member, Integer commentCount, List<MediaDto> mediaDtos, Integer reactionCount, Boolean isLiked) {
         this.feedId = feedListDto.getFeedId();
         this.publicScope = feedListDto.getPublicScope();
         this.contents = feedListDto.getContents();
@@ -61,5 +64,6 @@ public class FeedListDto {
         this.commentCount = commentCount;
         this.mediaDtos = mediaDtos;
         this.reactionCount = reactionCount;
+        this.isLiked = isLiked;
     }
 }

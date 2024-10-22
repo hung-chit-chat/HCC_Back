@@ -1,17 +1,14 @@
 package com.example.feedservice.feed.service;
 
-import com.example.feedservice.feed.dto.redis.CursorDto;
 import com.example.feedservice.feed.dto.request.RequestFeedCursorDto;
 import com.example.feedservice.feed.dto.request.RequestFeedUpdateDto;
 import com.example.feedservice.feed.dto.response.ResponseFeedDto;
 import com.example.feedservice.feed.dto.response.ResponseSuccessDto;
-import com.example.feedservice.feed.dto.response.feed.ProjectionsFeedDto;
 import com.example.feedservice.media.service.MediaService;
 import com.example.feedservice.feed.dto.request.RequestFeedCreateDto;
 import com.example.feedservice.feed.entity.FeedEntity;
 import com.example.feedservice.feed.repository.FeedRepository;
 import com.example.feedservice.common.util.FeedUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
