@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/feed")
@@ -31,7 +32,7 @@ public class FeedController {
     }
 
 
-    @PutMapping("/{feedId}")
+    @PutMapping("{feedId}")
     public ResponseEntity<ResponseSuccessDto> updateFeed(@PathVariable String feedId, @RequestBody RequestFeedUpdateDto requestFeedUpdateDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(feedService.updateFeed(feedId, requestFeedUpdateDto));
@@ -39,13 +40,16 @@ public class FeedController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().result("error").build());
         }
     }
-    
 
-    @GetMapping("/feeds")
-    public ResponseEntity<Mono<ResponseFeedDto>> getFeedList(@RequestBody RequestFeedCursorDto requestFeedCursorDto) {
+    /**
+     * 전체 목록 조회, 커서 기반 전략
+     * @param cursor - LocalDateTime -> String 으로 변환 후 넘겨받기
+     * */
+    @GetMapping
+    public ResponseEntity<Mono<ResponseFeedDto>> getFeedList(@RequestParam(required = false) String cursor) {
 
         try{
-            return ResponseEntity.status(HttpStatus.OK).body(feedService.getFeedList(requestFeedCursorDto));
+            return ResponseEntity.status(HttpStatus.OK).body(feedService.getFeedList(cursor));
         }catch(IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

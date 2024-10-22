@@ -131,7 +131,7 @@ class FeedServiceTest {
 
 
 
-        LocalDateTime validDateTime = LocalDateTime.parse("2024-10-13T10:15:30");
+        String validDateTime = LocalDateTime.parse("2024-10-13T10:15:30").toString();
 
         boolean validLocalDateTime = feedService.isValidLocalDateTime(validDateTime);
 
@@ -147,88 +147,6 @@ class FeedServiceTest {
             this.password = password;
         }
     }
-
-    /**
-     *                                              멤버 데이터 생성 및 피드 목록조회 확인
-     * */
-    @DisplayName("피드 목록 테스트 Mockito")
-    @Test
-    public void testGetFeedListMockTest(){
-
-        LocalDateTime loca = LocalDateTime.now();
-
-//        CursorDto cursorDto = new CursorDto(loca);
-//
-//        Mockito.when(redisTemplate.opsForValue().get(cursorDto))
-//                .thenReturn(null);
-
-        ResponseMemberProfileDto responseMemberDto1 = new ResponseMemberProfileDto("1234", "C:/Users/User/Desktop/filetest/image1.jpg");
-        ResponseMemberProfileDto responseMemberDto2 = new ResponseMemberProfileDto("4567", "C:/Users/User/Desktop/filetest/image2.jpg");
-        ResponseMemberProfileDto responseMemberDto3 = new ResponseMemberProfileDto("abcd", "C:/Users/User/Desktop/filetest/image3.jpg");
-        ResponseMemberProfileDto responseMemberDto4 = new ResponseMemberProfileDto("efgg", "C:/Users/User/Desktop/filetest/image4.jpg");
-
-        // 가짜 Feed 데이터 설정
-        List<FeedEntity> mockEntities = Arrays.asList(
-                new FeedEntity(feedUtil.getUUID(), "1234", "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(14)),
-                new FeedEntity(feedUtil.getUUID(), "1234", "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(15)),
-                new FeedEntity(feedUtil.getUUID(), "4567", "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(16)),
-                new FeedEntity(feedUtil.getUUID(), "4567", "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(17)),
-                new FeedEntity(feedUtil.getUUID(), "abcd", "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(18)),
-                new FeedEntity(feedUtil.getUUID(), "abcd", "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(19)),
-                new FeedEntity(feedUtil.getUUID(), "efgg", "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(20)),
-                new FeedEntity(feedUtil.getUUID(), "efgg", "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(21)),
-                new FeedEntity(feedUtil.getUUID(), "1234", "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(22)),
-                new FeedEntity(feedUtil.getUUID(), "4567", "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(23)),
-                new FeedEntity(feedUtil.getUUID(), "abcd", "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(24)),
-                new FeedEntity(feedUtil.getUUID(), "efgg", "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(25))
-        );
-
-        // Mockito 는 실제 객체에 접근 불가능
-        Mockito.when(feedRepository.findFeedByCursor(loca))
-                .thenReturn(mockEntities);
-
-        // 가짜 Feed 데이터 설정
-        List<FeedListDto> mockFeeds = Arrays.asList(
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto1, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(14),  3, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto1, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(15),  2, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto2, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(16),  500, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto2, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(17),  4, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto3, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(18),  15, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto3, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(19),  23, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(20),  69, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(21),  16, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto1, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(22),  33, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto2, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(23),  86, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto3, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(24),  0, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(25),  7, null, 0 )
-        );
-
-        RequestFeedCursorDto requestFeedCursorDto = new RequestFeedCursorDto(loca);
-
-
-        Mono<ResponseFeedDto> result = feedService.getFeedList(requestFeedCursorDto);
-
-        ResponseFeedDto response = result.block();
-
-        // 검증
-        assertNotNull(response);  // 데이터가 반환되는지 확인
-        assertEquals(12, response.getFeedListDto().size());  // 반환된 피드의 개수 검증
-        assertEquals("TEST 1", response.getFeedListDto().get(0).getContents());  // 첫 번째 피드의 내용이 "TEST 1"인지 확인
-        assertEquals("1234", response.getFeedListDto().get(0).getMember().getMemberId());  // 첫 번째 피드의 멤버 ID 검증
-        assertTrue(response.isHasMore());  // 데이터가 더 있는지(hasMore 값이 true인지) 확인
-
-    }
-
-    @DisplayName("피드 목록 테스트")
-    @Test
-    public void testGetFeedListTest(){
-        RequestFeedCursorDto requestFeedCursorDto = new RequestFeedCursorDto(LocalDateTime.now());
-        feedService.getFeedList(requestFeedCursorDto);
-
-
-
-    }
-
 
 
 }

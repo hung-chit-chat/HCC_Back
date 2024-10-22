@@ -111,29 +111,26 @@ public class FeedService {
 
     /**
      * 회원 목록 조회 ( 커서 기반 전략 )
-     * @param (requestFeedCursorDto) - 커서 시간 지정 ( LocalDateTime )
+     * @param (cursor) - 커서 시간 지정 ( LocalDateTime )
      * @return FeedDto
      * */
-    public Mono<ResponseFeedDto> getFeedList(RequestFeedCursorDto requestFeedCursorDto) {
+    public Mono<ResponseFeedDto> getFeedList(String cursor) {
 
-        LocalDateTime cursor = requestFeedCursorDto.getCursorDate();
-
-        if(cursor == null){
-            cursor = LocalDateTime.now();
+        if(cursor == null || !isValidLocalDateTime(cursor)){
+            cursor = LocalDateTime.now().toString();
         }
 
         try{
             // 커서(조회 시간)가 유효한지 체크 
-            if(isValidLocalDateTime(cursor)) {
-                ResponseFeedDto responseFeedDto = redisTemplate.opsForValue().get(requestFeedCursorDto.getCursorDate().toString());
+                ResponseFeedDto responseFeedDto = redisTemplate.opsForValue().get(cursor);
                 // Redis 체크 및 확인
                 if(responseFeedDto != null){
                     return Mono.just(responseFeedDto);
                 } else {
 
-                    // Feed Entity 조회 FetchJoin
+                    LocalDateTime cursorDate = LocalDateTime.parse(cursor);
 
-                    List<FeedEntity> feedEntities = feedRepository.findFeedByCursor(cursor);
+                    List<FeedEntity> feedEntities = feedRepository.findFeedByCursor(cursorDate);
 
                     // Feed Entity 에서 memberId 추출
                     Set<String> memberIds = feedEntities.stream()
@@ -143,14 +140,12 @@ public class FeedService {
                     // Set -> List
                     List<String> memberIdList = List.copyOf(memberIds);
 
-                    return feedMonoService.getMemberFromMemberService(requestFeedCursorDto, memberIdList, feedEntities);
+                    return feedMonoService.getMemberFromMemberService(cursor, memberIdList, feedEntities);
                 }
-            }
         } catch(DateTimeParseException e){
             throw new IllegalArgumentException("Invalid cursor date");
         }
 
-        return Mono.error(new RuntimeException("Error"));
     }
 
     /**
@@ -158,11 +153,11 @@ public class FeedService {
      * @param (cursor) - LocalDateTime
      * @return boolean
      * */
-    protected boolean isValidLocalDateTime(LocalDateTime cursor) {
+    protected boolean isValidLocalDateTime(String cursor) {
         try{
             // ISO_LOCAL_DATE_TIME = yyyy-MM-ddTHH:mm:ss 형식
             DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-            LocalDateTime.parse(cursor.toString(), formatter);
+            LocalDateTime.parse(cursor, formatter);
             return true;
         } catch(DateTimeParseException e){
             // 잘못된 형식일 시 예외 발생

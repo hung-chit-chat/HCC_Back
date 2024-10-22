@@ -11,6 +11,7 @@ import com.example.feedservice.media.dto.MediaDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class FeedMonoService {
     /**
      * member Service 에 비동기로 통신
      * */
-    protected Mono<ResponseFeedDto> getMemberFromMemberService(RequestFeedCursorDto requestFeedCursorDto, List<String> memberIds, List<FeedEntity> feedEntities){
+    protected Mono<ResponseFeedDto> getMemberFromMemberService(String cursor, List<String> memberIds, List<FeedEntity> feedEntities){
 
         return feedRestService.communicateMemberService(memberIds).map(memberFromMemberService -> {
             // Map<memberId, responseMemberDto> 데이터 -> 맵으로 stream
@@ -71,7 +72,7 @@ public class FeedMonoService {
             }).toList();
 
             // DB 에서 select 한 데이터 중 5개만 제외하고 나머지는 레디스에 저장, 제외한 데이터는 반환
-            return this.saveRedisAndReturnRemainingFeed(requestFeedCursorDto.getCursorDate(), collect);
+            return this.saveRedisAndReturnRemainingFeed(cursor, collect);
         });
     }
 
@@ -79,7 +80,7 @@ public class FeedMonoService {
      * 데이터(0~15) 중 5개를 제외한 나머지 데이터 레디스에 저장
      * 제외한 데이터는 반환
      * */
-    protected ResponseFeedDto saveRedisAndReturnRemainingFeed(LocalDateTime cursorDate, List<FeedListDto> feedList){
+    protected ResponseFeedDto saveRedisAndReturnRemainingFeed(String cursor, List<FeedListDto> feedList){
         // 5개를 제외한 데이터 저장
         List<FeedListDto> feedSkipList = feedList.size() > 5 ? feedList.subList(5, feedList.size()) : Collections.emptyList();
 
@@ -118,7 +119,7 @@ public class FeedMonoService {
 
             // 첫 데이터 5개를 반환
             return ResponseFeedDto.builder()
-                    .cursorDate(cursorDate.toString())
+                    .cursorDate(cursor)
                     .feedListDto(feedList.stream().limit(5).toList())
                     .nextCursorDate(returnNextCursorDate.toString())
                     .hasMore(true)
@@ -127,7 +128,7 @@ public class FeedMonoService {
         } else{
             // 데이터가 5개 이하인 경우 모두 반환
             return ResponseFeedDto.builder()
-                    .cursorDate(cursorDate.toString())
+                    .cursorDate(cursor)
                     .feedListDto(feedList)
                     .nextCursorDate(null)
                     .hasMore(false)

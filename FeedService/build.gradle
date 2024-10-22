@@ -58,6 +58,8 @@ dependencies {
     // json은  java8 localdatetime 직렬화를 하지않음
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+    runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.104.Final:osx-aarch_64'
+
 
 }
 
