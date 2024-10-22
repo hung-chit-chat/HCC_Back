@@ -2,10 +2,8 @@ package com.example.feedservice.feed.entity;
 
 import com.example.feedservice.comment.entity.CommentEntity;
 import com.example.feedservice.common.entity.BaseEntity;
-import com.example.feedservice.feed.dto.response.feed.ProjectionsFeedDto;
 import com.example.feedservice.media.entity.MediaEntity;
 import com.example.feedservice.reaction.entity.ReactionEntity;
-import com.querydsl.core.annotations.QueryProjection;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -63,10 +61,6 @@ public class FeedEntity extends BaseEntity {
         this.publicScope = publicScope;
         this.contents = contents;
         this.setCreatedDate(localDateTime);
-    }
-
-    public FeedEntity(ProjectionsFeedDto projectionsFeedDto) {
-        //TODO:: this.~ 추가
     }
 
     public void changeContents(String contents) {

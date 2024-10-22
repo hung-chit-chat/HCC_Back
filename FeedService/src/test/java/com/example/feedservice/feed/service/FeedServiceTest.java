@@ -5,8 +5,6 @@ import com.example.feedservice.feed.dto.request.RequestFeedCursorDto;
 import com.example.feedservice.feed.dto.request.RequestFeedUpdateDto;
 import com.example.feedservice.feed.dto.response.ResponseFeedDto;
 import com.example.feedservice.feed.dto.response.feed.FeedListDto;
-import com.example.feedservice.feed.dto.response.feed.ProjectionsFeedDto;
-import com.example.feedservice.feed.dto.response.member.ResponseMemberDto;
 import com.example.feedservice.feed.dto.response.member.ResponseMemberProfileDto;
 import com.example.feedservice.feed.entity.FeedEntity;
 import com.example.feedservice.feed.repository.FeedRepository;
@@ -15,25 +13,20 @@ import com.example.feedservice.feed.dto.request.RequestFeedCreateDto;
 import com.example.feedservice.media.repository.MediaRepository;
 import com.example.feedservice.common.util.FeedUtil;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,7 +35,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -189,18 +181,18 @@ class FeedServiceTest {
 
         // 가짜 Feed 데이터 설정
         List<FeedListDto> mockFeeds = Arrays.asList(
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto1, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(14),  3, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto1, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(15),  2, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto2, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(16),  500, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto2, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(17),  4, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto3, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(18),  15, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto3, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(19),  23, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(20),  69, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(21),  16, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto1, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(22),  33, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto2, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(23),  86, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto3, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(24),  0, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(25),  7, null, 0 )
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto1, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(14),  3, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto1, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(15),  2, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto2, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(16),  500, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto2, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(17),  4, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto3, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(18),  15, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto3, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(19),  23, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(20),  69, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(21),  16, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto1, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(22),  33, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto2, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(23),  86, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto3, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(24),  0, null, 0 ,false),
+                new FeedListDto(feedUtil.getUUID(), responseMemberDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(25),  7, null, 0 ,false)
         );
 
         RequestFeedCursorDto requestFeedCursorDto = new RequestFeedCursorDto(loca);
