@@ -50,7 +50,7 @@ public class MemberService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final FilePath filePath;
 
-    @Value("${domain.local}")
+    @Value("${domain.dev.jwt}")
     private String JWT_DOMAIN;
 
 
