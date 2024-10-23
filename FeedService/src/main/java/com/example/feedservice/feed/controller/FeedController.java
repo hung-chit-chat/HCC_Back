@@ -23,9 +23,16 @@ public class FeedController {
     private final FeedService feedService;
 
     @PostMapping("/feeds")
-    public ResponseEntity<ResponseSuccessDto> createFeed(@RequestBody RequestFeedCreateDto requestFeedCreateDto) {
+    public ResponseEntity<ResponseSuccessDto> createFeed(@RequestBody RequestFeedCreateDto requestFeedCreateDto, @RequestHeader("Authorization") String bearerToken) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(feedService.createFeed(requestFeedCreateDto));
+            String token = null;
+            if("Bearer ".equals(bearerToken.substring(0, 7))){
+                token = bearerToken.substring(7);
+            } else{
+                throw new IllegalArgumentException("Invalid Bearer Token");
+            }
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(feedService.createFeed(requestFeedCreateDto, token));
         } catch(RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().result("error").build());
         }
@@ -33,9 +40,9 @@ public class FeedController {
 
 
     @PutMapping("{feedId}")
-    public ResponseEntity<ResponseSuccessDto> updateFeed(@PathVariable String feedId, @RequestBody RequestFeedUpdateDto requestFeedUpdateDto) {
+    public ResponseEntity<ResponseSuccessDto> updateFeed(@PathVariable String feedId, @RequestBody RequestFeedUpdateDto requestFeedUpdateDto, @RequestHeader("Authorization") String token) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(feedService.updateFeed(feedId, requestFeedUpdateDto));
+            return ResponseEntity.status(HttpStatus.OK).body(feedService.updateFeed(feedId, requestFeedUpdateDto, token));
         } catch(RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().result("error").build());
         }
@@ -46,10 +53,16 @@ public class FeedController {
      * @param cursor - LocalDateTime -> String 으로 변환 후 넘겨받기
      * */
     @GetMapping
-    public ResponseEntity<Mono<ResponseFeedDto>> getFeedList(@RequestParam(required = false) String cursor) {
+    public ResponseEntity<Mono<ResponseFeedDto>> getFeedList(@RequestParam(required = false) String cursor, @RequestHeader("Authorization") String bearerToken) {
 
         try{
-            return ResponseEntity.status(HttpStatus.OK).body(feedService.getFeedList(cursor));
+            String token = null;
+            if("Bearer ".equals(bearerToken.substring(0, 7))){
+                token = bearerToken.substring(7);
+            } else{
+                throw new IllegalArgumentException("Invalid Bearer Token");
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(feedService.getFeedList(cursor, token));
         }catch(IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

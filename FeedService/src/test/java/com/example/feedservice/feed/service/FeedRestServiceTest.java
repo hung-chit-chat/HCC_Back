@@ -25,7 +25,7 @@ class FeedRestServiceTest {
 
         memberIds.add("c90f6d83-3a00-45db-8ca1-c1a2d04795d2");
 
-        Mono<List<ResponseMemberDto>> listMono = feedRestService.communicateMemberService(memberIds);
+        Mono<List<ResponseMemberDto>> listMono = feedRestService.communicateMemberService(memberIds, "1111");
 
         List<ResponseMemberDto> block = listMono.block();
 

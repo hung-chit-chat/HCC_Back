@@ -1,5 +1,6 @@
 package com.example.feedservice.feed.service;
 
+import com.example.feedservice.common.entity.JwtUtil;
 import com.example.feedservice.feed.dto.request.RequestFeedCursorDto;
 import com.example.feedservice.feed.dto.request.RequestFeedUpdateDto;
 import com.example.feedservice.feed.dto.response.ResponseFeedDto;
@@ -32,13 +33,15 @@ public class FeedService {
     private final FeedUtil feedUtil;
     private final RedisTemplate<String, ResponseFeedDto> redisTemplate;
     private final FeedMonoService feedMonoService;
+    private final JwtUtil jwtUtil;
 
-    public FeedService(FeedRepository feedRepository, MediaService mediaService, FeedUtil feedUtil,@Qualifier("feedListRedisTemplate") RedisTemplate<String, ResponseFeedDto> redisTemplate, FeedMonoService feedMonoService) {
+    public FeedService(FeedRepository feedRepository, MediaService mediaService, FeedUtil feedUtil,@Qualifier("feedListRedisTemplate") RedisTemplate<String, ResponseFeedDto> redisTemplate, FeedMonoService feedMonoService, JwtUtil jwtUtil) {
         this.feedRepository = feedRepository;
         this.mediaService = mediaService;
         this.feedUtil = feedUtil;
         this.redisTemplate = redisTemplate;
         this.feedMonoService = feedMonoService;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -47,20 +50,22 @@ public class FeedService {
      * @return "success"
      * */
     @Transactional
-    public ResponseSuccessDto createFeed(RequestFeedCreateDto requestFeedCreateDto){
+    public ResponseSuccessDto createFeed(RequestFeedCreateDto requestFeedCreateDto, String token){
 
         String feedId = feedUtil.getUUID();
+
+        String memberId = jwtUtil.extractClaim(token, "member_id");
 
         // feed Entity 생성
         FeedEntity feed = FeedEntity.builder()
                 .feedId(feedId)
-                .memberId(requestFeedCreateDto.getMemberId())
+                .memberId(memberId)
                 .contents(requestFeedCreateDto.getContents())
                 .publicScope(requestFeedCreateDto.getPublicScope())
                 .build();
 
         // 프론트에서 넘어온 Media 객체가 없으면 스킵
-        if(!requestFeedCreateDto.getMedia().isEmpty()) {
+        if(requestFeedCreateDto.getMedia() != null) {
             try {
                 // File 로컬에 저장 및 연관관계 매핑, 영속성 컨텍스트에 들어간 Post Entity 저장
                 mediaService.uploadMediaAtStore(feed, requestFeedCreateDto.getMedia());
@@ -85,7 +90,7 @@ public class FeedService {
      * @return "success"
      * */
     @Transactional
-    public ResponseSuccessDto updateFeed(String feedId, RequestFeedUpdateDto requestFeedUpdateDto){
+    public ResponseSuccessDto updateFeed(String feedId, RequestFeedUpdateDto requestFeedUpdateDto, String token){
 
         FeedEntity feedEntity = feedRepository.findById(feedId).orElseThrow(() -> new IllegalArgumentException("Feed Not Found"));
         feedEntity.changeContents(requestFeedUpdateDto.getContents());      // 내용 변경
@@ -111,7 +116,7 @@ public class FeedService {
      * @param (cursor) - 커서 시간 지정 ( LocalDateTime )
      * @return FeedDto
      * */
-    public Mono<ResponseFeedDto> getFeedList(String cursor) {
+    public Mono<ResponseFeedDto> getFeedList(String cursor, String token) {
 
         if(cursor == null || !isValidLocalDateTime(cursor)){
             cursor = LocalDateTime.now().toString();
@@ -131,13 +136,13 @@ public class FeedService {
 
                     // Feed Entity 에서 memberId 추출
                     Set<String> memberIds = feedEntities.stream()
-                            .map(FeedEntity::getFeedId)
+                            .map(FeedEntity::getMemberId)
                             .collect(Collectors.toSet());
 
                     // Set -> List
                     List<String> memberIdList = List.copyOf(memberIds);
 
-                    return feedMonoService.getMemberFromMemberService(cursor, memberIdList, feedEntities);
+                    return feedMonoService.getMemberFromMemberService(cursor, memberIdList, feedEntities, token);
                 }
         } catch(DateTimeParseException e){
             throw new IllegalArgumentException("Invalid cursor date");
