@@ -49,9 +49,9 @@ public class FeedMonoService {
     /**
      * member Service 에 비동기로 통신
      * */
-    protected Mono<ResponseFeedDto> getMemberFromMemberService(String cursor, List<String> memberIds, List<FeedEntity> feedEntities){
+    protected Mono<ResponseFeedDto> getMemberFromMemberService(String cursor, List<String> memberIds, List<FeedEntity> feedEntities, String token){
 
-        return feedRestService.communicateMemberService(memberIds).map(memberFromMemberService -> {
+        return feedRestService.communicateMemberService(memberIds, token).map(memberFromMemberService -> {
             // Map<memberId, responseMemberDto> 데이터 -> 맵으로 stream
             Map<String, ResponseMemberDto> memberMap = memberFromMemberService.stream().collect(Collectors.toMap(ResponseMemberDto::getMemberId, ResponseMemberDto -> ResponseMemberDto));
 

@@ -33,7 +33,7 @@ public class FeedRestService {
      * 멤버 서비스와 통신
      * @param (memberIds) - List
      * */
-    protected Mono<List<ResponseMemberDto>> communicateMemberService(List<String> memberIds) {
+    protected Mono<List<ResponseMemberDto>> communicateMemberService(List<String> memberIds, String token) {
 
         String domainPlusPort = domain + ":8081";
 
@@ -45,6 +45,7 @@ public class FeedRestService {
         // URL + GET 매핑 조회 및 반환
         return webClient.get()
                 .uri(uri)
+                .header("Authorization", "Bearer " + token)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<ResponseMemberDto>>() {
                 });

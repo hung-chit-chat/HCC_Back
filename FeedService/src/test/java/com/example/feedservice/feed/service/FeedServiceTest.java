@@ -62,13 +62,12 @@ class FeedServiceTest {
         multipartFiles.add(new MockMultipartFile("testImage5",  "testImage5.jpg", "image/jpg", Files.readAllBytes(Paths.get(uploadPath + "/" + "test1.jpg"))));    // 테스트 완료
 
         RequestFeedCreateDto requestFeedCreateDto = RequestFeedCreateDto.builder()
-                .memberId("1234")
                 .contents("5678")
                 .publicScope("PUBLIC")
                 .media(multipartFiles)
                 .build();
 
-        feedService.createFeed(requestFeedCreateDto);
+        feedService.createFeed(requestFeedCreateDto, "1111");
         /**
          * 테스트 완료 2024-10-02
          * */
@@ -96,7 +95,7 @@ class FeedServiceTest {
                 .media(multipartFiles)
                 .build();
 
-        feedService.updateFeed(findFeed.getFeedId(), requestFeedUpdateDto);
+        feedService.updateFeed(findFeed.getFeedId(), requestFeedUpdateDto, "1111");
 
     }
 

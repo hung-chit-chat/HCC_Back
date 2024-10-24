@@ -111,7 +111,7 @@ class FeedMonoServiceTest {
         members.add(testUser2);
         members.add(testUser5);
 
-        Mockito.when(feedRestService.communicateMemberService(memberIds)).thenReturn(Mono.just(members));
+        Mockito.when(feedRestService.communicateMemberService(memberIds, "1111")).thenReturn(Mono.just(members));
 
         LocalDateTime nowDate = LocalDateTime.now();
 
@@ -119,7 +119,7 @@ class FeedMonoServiceTest {
 
         List<FeedEntity> findEntities = feedRepository.findAll();
 
-        Mono<ResponseFeedDto> memberFromMemberService = feedMonoService.getMemberFromMemberService(nowDate.toString(), memberIds, findEntities);
+        Mono<ResponseFeedDto> memberFromMemberService = feedMonoService.getMemberFromMemberService(nowDate.toString(), memberIds, findEntities, "111");
 
         ResponseFeedDto blocked = memberFromMemberService.block();
 
@@ -155,7 +155,7 @@ class FeedMonoServiceTest {
         members.add(testUser4);
 
         // feedRestService의 Mock 설정 - Mono로 감싸서 반환
-        Mockito.when(feedRestService.communicateMemberService(memberIds)).thenReturn(Mono.just(members));
+        Mockito.when(feedRestService.communicateMemberService(memberIds, "11111")).thenReturn(Mono.just(members));
 
 
 
@@ -179,7 +179,7 @@ class FeedMonoServiceTest {
         members.add(testUser4);
 
         // feedRestService의 Mock 설정 - Mono로 감싸서 반환
-        Mockito.when(feedRestService.communicateMemberService(memberIds)).thenReturn(Mono.just(members));
+        Mockito.when(feedRestService.communicateMemberService(memberIds, "11111")).thenReturn(Mono.just(members));
 
         LocalDateTime loca = LocalDateTime.now();
 
@@ -189,18 +189,18 @@ class FeedMonoServiceTest {
 
         // 가짜 Feed 데이터 설정
         List<FeedListDto> mockFeeds = Arrays.asList(
-                new FeedListDto(feedUtil.getUUID(), testUserDto3, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(15),  2, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(16),  500, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto3, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(17),  4, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(18),  15, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(19),  23, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto6, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(20),  69, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto6, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(21),  16, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(22),  33, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(23),  86, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(24),  0, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(25),  7, null, 0 ),
-                new FeedListDto(feedUtil.getUUID(), testUserDto3, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(14),  3, null, 0 )
+                new FeedListDto(feedUtil.getUUID(), testUserDto3, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(15),  2, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(16),  500, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto3, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(17),  4, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(18),  15, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(19),  23, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto6, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(20),  69, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto6, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(21),  16, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(22),  33, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(23),  86, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(24),  0, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto4, "PUBLIC", "TEST 1",loca.minusHours(2).plusMinutes(25),  7, null, 0 , true),
+                new FeedListDto(feedUtil.getUUID(), testUserDto3, "PUBLIC", "TEST 1",loca.minusHours(1).plusMinutes(14),  3, null, 0 , true)
         );
 
         List<FeedListDto> sortedList = mockFeeds.stream().sorted(Comparator.comparing(FeedListDto::getCreatedDate).reversed()).toList();
