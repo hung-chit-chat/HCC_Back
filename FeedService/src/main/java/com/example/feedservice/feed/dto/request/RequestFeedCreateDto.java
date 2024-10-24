@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestFeedCreateDto {
 
-    private String memberId;
     private String publicScope;
 
     @Size(max = 3000)       // 최대 3000자
@@ -24,8 +23,7 @@ public class RequestFeedCreateDto {
     }
 
     @Builder
-    public RequestFeedCreateDto(String memberId, String publicScope, String contents, List<MultipartFile> media) {
-        this.memberId = memberId;
+    public RequestFeedCreateDto(String publicScope, String contents, List<MultipartFile> media) {
         this.publicScope = publicScope;
         this.contents = contents;
         this.media = media;

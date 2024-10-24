@@ -4,8 +4,8 @@ server:
 
 ### 파일이 저장되는 절대경로. 기본설정은 도커 환경으로 설정. application-local에 저장할 절대경로 작성해두면 우선순위 local로 됨.
 file-path:
-  normal: "/app/resource/"    # 리눅스 계열
-#  default: "C:/Users/User/Desktop/filetest/"          # Windows 파일 경로 예제
+#  normal: "/app/resource/"    # 리눅스 계열
+  default: "C:/Users/User/Desktop/filetest/"          # Windows 파일 경로 예제
 
 domain:
   local: "http://localhost"

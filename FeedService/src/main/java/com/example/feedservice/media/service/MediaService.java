@@ -82,6 +82,7 @@ public class MediaService {
                     .mediaPath(pathName)
                     .mediaSize(multipartFile.getSize())
                     .mediaName(multipartFile.getOriginalFilename())
+                    .sequence(mediaList.indexOf(multipartFile))
                     .build();
 
             // 연관관계 설정

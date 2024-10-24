@@ -20,6 +20,8 @@ public class ReactionEntity extends BaseEntity {
     @Column(nullable = false)
     private String memberId;
 
+    private Integer sequence;
+
     @Override
     public String getId() {
         return this.reactionId;

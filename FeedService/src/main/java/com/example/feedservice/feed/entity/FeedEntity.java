@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +34,15 @@ public class FeedEntity extends BaseEntity {
     private String contents;
 
     @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)            // 부모엔티티(feedEntity)가 모든 동작을 할때 자식엔티티(CommentEntity)가 영향 받음 Ex) feedEntity 삭제 -> 연관된 CommentEntity 모두 삭제
+    @OrderColumn(name = "createdDate")
     private List<CommentEntity> commentList = new ArrayList<>();        // 양방향
 
     @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+    @OrderColumn(name = "sequence")
     private List<MediaEntity> mediaList = new ArrayList<>();              // 양방향
 
     @OneToMany(cascade = CascadeType.ALL)
+    @OrderColumn(name = "createdDate")
     @JoinColumn(name = "feed_id")   // FK 이므로 테이블 생성 안해도댐
     private List<ReactionEntity> reactionList = new ArrayList<>();      // 단방향 설정
 
@@ -48,6 +52,15 @@ public class FeedEntity extends BaseEntity {
         this.memberId = memberId;
         this.publicScope = publicScope;
         this.contents = contents;
+    }
+
+    @Builder
+    public FeedEntity(String feedId, String memberId, String publicScope, String contents, LocalDateTime localDateTime) {
+        this.feedId = feedId;
+        this.memberId = memberId;
+        this.publicScope = publicScope;
+        this.contents = contents;
+        this.setCreatedDate(localDateTime);
     }
 
     public void changeContents(String contents) {
@@ -77,4 +90,5 @@ public class FeedEntity extends BaseEntity {
     public void clearMedia() {
         this.mediaList.clear();
     }
+
 }

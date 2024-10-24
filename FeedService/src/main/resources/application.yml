@@ -9,6 +9,11 @@ spring:
 
   application:
     name: feed-service
+  data:
+    redis:
+      port: 64881
+
+domain: "http://localhost"
 
 upload:
   #path: "/Users/yudong-yeob/desktop/filetest"    # MAC 파일 경로
