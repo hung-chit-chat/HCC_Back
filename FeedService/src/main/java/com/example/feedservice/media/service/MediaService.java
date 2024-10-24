@@ -77,14 +77,12 @@ public class MediaService {
             String pathName = savedDirectoryPath + "/" + mediaId + "." + extension;
             multipartFile.transferTo(new File(pathName));
 
-            String hashCode = mediaUtil.getHashGenerate(multipartFile, mediaType);
-
             MediaEntity mediaEntity = MediaEntity.builder()
                     .mediaId(mediaId)
                     .mediaPath(pathName)
                     .mediaSize(multipartFile.getSize())
                     .mediaName(multipartFile.getOriginalFilename())
-                    .mediaHash(hashCode)
+                    .sequence(mediaList.indexOf(multipartFile))
                     .build();
 
             // 연관관계 설정
@@ -140,7 +138,6 @@ public class MediaService {
                 }
 
                 // 파일 해시 생성
-                String hashCode = mediaUtil.getHashGenerate(multipartFile, contentType.substring(0, 5));
                 String mediaId = feedUtil.getUUID();
 
                 String extension = multipartFile.getContentType().substring(multipartFile.getContentType().lastIndexOf("/") + 1);
@@ -155,7 +152,6 @@ public class MediaService {
                         .mediaPath(pathName)
                         .mediaSize(multipartFile.getSize())
                         .mediaName(multipartFile.getOriginalFilename())
-                        .mediaHash(hashCode)  // 해시값 저장
                         .build();
 
                 // Feed 와의 연관관계 설정

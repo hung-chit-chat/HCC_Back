@@ -1,8 +1,16 @@
 server:
   port: 8081
 
+
+### 파일이 저장되는 절대경로. 기본설정은 도커 환경으로 설정. application-local에 저장할 절대경로 작성해두면 우선순위 local로 됨.
+file-path:
+#  normal: "/app/resource/"    # 리눅스 계열
+  default: "C:/Users/User/Desktop/filetest/"          # Windows 파일 경로 예제
+
 domain:
   local: "http://localhost"
+  dev:
+    jwt: "http://jwt-service"
 
 spring:
   datasource:
@@ -22,7 +30,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+#      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -36,14 +45,3 @@ spring:
 #logging:
 #  level:
 #    root: off
-
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: health,info  # 활성화할 엔드포인트
-#  health:
-#    livenessstate:
-#      enabled: true
-#    readinessstate:
-#      enabled: true

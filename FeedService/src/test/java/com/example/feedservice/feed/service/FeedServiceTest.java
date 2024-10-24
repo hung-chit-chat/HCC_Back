@@ -1,45 +1,56 @@
 package com.example.feedservice.feed.service;
 
+import com.example.feedservice.feed.dto.redis.CursorDto;
 import com.example.feedservice.feed.dto.request.RequestFeedUpdateDto;
+import com.example.feedservice.feed.dto.response.ResponseFeedDto;
 import com.example.feedservice.feed.entity.FeedEntity;
 import com.example.feedservice.feed.repository.FeedRepository;
 import com.example.feedservice.media.service.MediaService;
 import com.example.feedservice.feed.dto.request.RequestFeedCreateDto;
 import com.example.feedservice.media.repository.MediaRepository;
 import com.example.feedservice.common.util.FeedUtil;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @SpringBootTest
 class FeedServiceTest {
 
-    @Autowired private FeedService feedService;
-    @Autowired private FeedUtil feedUtil;
-    @Autowired private MediaService mediaService;
-    @Autowired private MediaRepository mediaRepository;
+    @InjectMocks private FeedService feedService;
+    @InjectMocks private FeedMonoService feedMonoService;
+    @Mock private FeedUtil feedUtil;
+    @Mock private MediaService mediaService;
+    @Mock private MediaRepository mediaRepository;
+
+    @Mock
+    @Qualifier("feedListRedisTemplate")
+    private RedisTemplate<CursorDto, ResponseFeedDto> redisTemplate;
 
     @Value("${upload.path}")
     private String uploadPath;
-    @Autowired
+    @Mock
     private FeedRepository feedRepository;
 
 
     @DisplayName("게시글 생성 테스트")
     @Test
+    @Rollback(false)
     public void PostServiceTest() throws Exception{
 
         List<MultipartFile> multipartFiles = new ArrayList<>();
@@ -51,13 +62,12 @@ class FeedServiceTest {
         multipartFiles.add(new MockMultipartFile("testImage5",  "testImage5.jpg", "image/jpg", Files.readAllBytes(Paths.get(uploadPath + "/" + "test1.jpg"))));    // 테스트 완료
 
         RequestFeedCreateDto requestFeedCreateDto = RequestFeedCreateDto.builder()
-                .memberId("1234")
                 .contents("5678")
                 .publicScope("PUBLIC")
                 .media(multipartFiles)
                 .build();
 
-        feedService.createFeed(requestFeedCreateDto);
+        feedService.createFeed(requestFeedCreateDto, "1111");
         /**
          * 테스트 완료 2024-10-02
          * */
@@ -85,7 +95,38 @@ class FeedServiceTest {
                 .media(multipartFiles)
                 .build();
 
-        feedService.updateFeed(findFeed.getFeedId(), requestFeedUpdateDto);
+        feedService.updateFeed(findFeed.getFeedId(), requestFeedUpdateDto, "1111");
 
     }
+
+    @DisplayName("localdatetime 커서 메소드 확인")
+    @Test
+    public void isValidLocalDateTime(){
+
+        // 예외 확인
+        Assertions.assertThatThrownBy(() -> {
+            LocalDateTime.parse("2024-10-13A10:15:30"); // 잘못된 형식 (T 대신 A)
+        })
+                .isInstanceOf(DateTimeException.class);
+
+
+
+        String validDateTime = LocalDateTime.parse("2024-10-13T10:15:30").toString();
+
+        boolean validLocalDateTime = feedService.isValidLocalDateTime(validDateTime);
+
+        Assertions.assertThat(validLocalDateTime).isTrue();
+    }
+
+    static class memberdto{
+        private String email;
+        private String password;
+
+        public memberdto(String email, String password) {
+            this.email = email;
+            this.password = password;
+        }
+    }
+
+
 }

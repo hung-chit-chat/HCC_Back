@@ -12,6 +12,9 @@ server:
 jwt:
   secret: "8GKpRztVsBEoonycMMhilEuoX6Y2YtNy"
 
+# 도메인 설정
+domain: "http://localhost:3000"
+
 
 spring:
   datasource:
@@ -35,7 +38,6 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/members/auth/**
-          filters:
         - id: jwt-service
           uri: http://localhost:8089
           predicates:
