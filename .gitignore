@@ -12,6 +12,7 @@ application-local.yml
 
 # Java class files
 *.class
+/test/
 
 # data files
 /mariadb-data/
