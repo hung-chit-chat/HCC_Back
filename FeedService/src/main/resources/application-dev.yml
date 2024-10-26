@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mariadb://mariaDB:3306/feed_db  # MySQL 컨테이너와 연결
+    url: jdbc:mariadb://mariaDB:3309/feed_db  # MySQL 컨테이너와 연결
     username: root
     password: root
     driver-class-name: org.mariadb.jdbc.Driver
