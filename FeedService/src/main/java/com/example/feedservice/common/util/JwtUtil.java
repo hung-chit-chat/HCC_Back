@@ -1,4 +1,4 @@
-package com.example.feedservice.common.entity;
+package com.example.feedservice.common.util;
 
 import com.auth0.jwt.JWT;
 import org.springframework.stereotype.Component;
