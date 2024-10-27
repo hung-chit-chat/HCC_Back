@@ -40,9 +40,9 @@ public class FeedController {
 
 
     @PutMapping("{feedId}")
-    public ResponseEntity<ResponseSuccessDto> updateFeed(@PathVariable String feedId, @RequestBody RequestFeedUpdateDto requestFeedUpdateDto, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ResponseSuccessDto> updateFeed(@PathVariable String feedId, @RequestBody RequestFeedUpdateDto requestFeedUpdateDto) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(feedService.updateFeed(feedId, requestFeedUpdateDto, token));
+            return ResponseEntity.status(HttpStatus.OK).body(feedService.updateFeed(feedId, requestFeedUpdateDto));
         } catch(RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseSuccessDto.builder().result("error").build());
         }
