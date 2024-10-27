@@ -48,6 +48,10 @@ spring:
             - Path=/feed/**
           filters:
             - JwtVerificationFilter
+        - id: acme-challenge
+          uri: file:///path/to/acme-challenge
+          predicates:
+            - Path=/.well-known/acme-challenge/**
 
 # TRACE(상세) > DEBUG(디버깅) > INFO(정보) > WARN(경고) > ERROR(에러) > FATAL(치명적 에러) > OFF(끄기)
 logging:
