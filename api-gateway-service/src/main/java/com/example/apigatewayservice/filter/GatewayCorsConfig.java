@@ -12,7 +12,7 @@ public class GatewayCorsConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOrigin("http://localhost:3000");           // 허용할 출처 (클라이언트 주소)
+        corsConfig.addAllowedOrigin("https://swaplinkie.xyz");           // 허용할 출처 (클라이언트 주소)
         corsConfig.addAllowedMethod(CorsConfiguration.ALL);             // 모든 메서드 허용
         corsConfig.addAllowedHeader(CorsConfiguration.ALL);             // 모든 헤더 허용
         corsConfig.setAllowCredentials(true);

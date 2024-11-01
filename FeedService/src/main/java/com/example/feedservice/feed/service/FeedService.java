@@ -1,7 +1,6 @@
 package com.example.feedservice.feed.service;
 
-import com.example.feedservice.common.entity.JwtUtil;
-import com.example.feedservice.feed.dto.request.RequestFeedCursorDto;
+import com.example.feedservice.common.util.JwtUtil;
 import com.example.feedservice.feed.dto.request.RequestFeedUpdateDto;
 import com.example.feedservice.feed.dto.response.ResponseFeedDto;
 import com.example.feedservice.feed.dto.response.ResponseSuccessDto;
@@ -90,7 +89,7 @@ public class FeedService {
      * @return "success"
      * */
     @Transactional
-    public ResponseSuccessDto updateFeed(String feedId, RequestFeedUpdateDto requestFeedUpdateDto, String token){
+    public ResponseSuccessDto updateFeed(String feedId, RequestFeedUpdateDto requestFeedUpdateDto){
 
         FeedEntity feedEntity = feedRepository.findById(feedId).orElseThrow(() -> new IllegalArgumentException("Feed Not Found"));
         feedEntity.changeContents(requestFeedUpdateDto.getContents());      // 내용 변경
