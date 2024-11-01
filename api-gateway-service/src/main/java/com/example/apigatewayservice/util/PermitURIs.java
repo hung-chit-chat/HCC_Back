@@ -15,7 +15,8 @@ public class PermitURIs {
             "/members/auth/",
             "/members/auth/**",
             "/jwt/refresh",
-            "/gateway/test"
+            "/gateway/test",
+            "/.well-known/acme-challenge/"
             );
 
     // Security 설정에서 사용할 배열
